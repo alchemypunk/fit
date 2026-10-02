@@ -1,120 +1,118 @@
-<title>晨练推拉腿计划</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Oswald:wght@500;600&display=swap">
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>晨练推拉腿计划 · 长文版</title>
 <style>
-/* 布局：单列阅读页，上限 760px；先是可点击的周表 + 当天流程面板，然后是固定准备模块，再是三个训练日的动作卡片；图示与要点并排，手机上堆叠 */
+/* 布局：手机优先的单屏应用。顶部固定：星期条 + 当前块进度；中间：横向 scroll-snap 的动作卡片（上图下文，卡片内可纵向滚动）；底部固定：上一步/下一步 + 训练/说明 切换 */
 :root{
-  --bg:#f3f4f2;
-  --surface:#ffffff;
-  --fg:#1c2026;
-  --muted:#5e6670;
-  --line:#d8dcdf;
-  --accent:#e4502f;
-  --accent-soft:#fbe4dd;
-  --pink:#f08ca3;
-  --ink:#232a33;
-  --ink-fg:#f4f5f3;
-  --ok:#2f8f5b;
-  --blue:#3b6ea8;
-  --font-body:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
-  --font-num:"Oswald","Noto Sans SC",system-ui,sans-serif;
+  --bg:#f3f4f2; --surface:#ffffff; --fg:#1c2026; --muted:#5e6670; --line:#d8dcdf;
+  --accent:#e4502f; --accent-soft:#fbe4dd; --pink:#f08ca3; --ink:#232a33; --ink-fg:#f4f5f3;
+  --ok:#2f8f5b; --blue:#3b6ea8; --figbg:#eceef0;
+  --font-body:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  --font-num:"Helvetica Neue","PingFang SC",system-ui,sans-serif;
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#15181c; --surface:#1e2228; --fg:#e8eaec; --muted:#9aa3ad; --line:#333a42;
-    --accent:#f0674a; --accent-soft:#3b231d; --pink:#d9748d; --ink:#0f1114; --ink-fg:#e8eaec; --ok:#5ec48b; --blue:#7aa6dc;
+    --accent:#f0674a; --accent-soft:#3b231d; --pink:#d9748d; --ink:#0f1114; --ink-fg:#e8eaec; --ok:#5ec48b; --blue:#7aa6dc; --figbg:#262b31;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#15181c; --surface:#1e2228; --fg:#e8eaec; --muted:#9aa3ad; --line:#333a42;
-  --accent:#f0674a; --accent-soft:#3b231d; --pink:#d9748d; --ink:#0f1114; --ink-fg:#e8eaec; --ok:#5ec48b; --blue:#7aa6dc;
+  --accent:#f0674a; --accent-soft:#3b231d; --pink:#d9748d; --ink:#0f1114; --ink-fg:#e8eaec; --ok:#5ec48b; --blue:#7aa6dc; --figbg:#262b31;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.75;margin:0}
-.wrap{max-width:760px;margin:0 auto;padding-inline:18px;padding-block:28px 64px}
-h1,h2,h3{text-wrap:balance;line-height:1.25;margin:0}
-h1{font-size:2rem;font-weight:900;letter-spacing:.01em}
-h2{font-size:1.35rem;font-weight:700;margin-top:3rem;padding-top:1.2rem;border-top:3px solid var(--fg)}
-h3{font-size:1.05rem;font-weight:700;margin-top:1.6rem}
-p{margin:.6rem 0}
-.eyebrow{font-family:var(--font-num);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
-.lead{color:var(--muted);font-size:1rem}
-.num{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-weight:600}
-ul,ol{padding-left:1.3em;margin:.4rem 0}
-li{margin:.2rem 0}
-small,.small{font-size:.86rem;color:var(--muted)}
-a{color:var(--accent)}
-button{font:inherit;color:inherit}
-button:focus-visible,.week [role=button]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.6;display:flex;flex-direction:column;overflow:hidden;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;line-height:1.25;text-wrap:balance}
+ul,ol{margin:.4rem 0;padding-left:1.25em}
+li{margin:.25rem 0}
+p{margin:.5rem 0}
+.hidden{display:none!important}
 
-.verdict{background:var(--ink);color:var(--ink-fg);padding:18px 20px;margin-top:1.6rem}
-.verdict p{margin:.4rem 0}
-.verdict .eyebrow{color:var(--pink)}
-
-/* 5/6 天切换 */
-.seg{display:inline-flex;border:1px solid var(--line);margin-top:1rem}
-.seg button{background:var(--surface);border:0;padding:6px 16px;cursor:pointer;font-weight:700;font-size:.9rem}
-.seg button+button{border-left:1px solid var(--line)}
+/* 顶部 */
+.top{flex:0 0 auto;background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px;gap:10px}
+.bar h1{font-size:1.05rem;font-weight:800;letter-spacing:.01em}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{padding:3px 11px;font-size:.78rem;font-weight:700;background:var(--surface)}
 .seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.days{display:flex;gap:6px;padding:4px 16px 10px;overflow-x:auto;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex:0 0 auto;min-width:46px;border:1px solid var(--line);border-radius:10px;padding:5px 7px;text-align:center;line-height:1.2;background:var(--surface);border-top-width:4px}
+.day .d{font-family:var(--font-num);font-size:.68rem;color:var(--muted);letter-spacing:.06em}
+.day .t{font-weight:800;font-size:.9rem;margin-top:2px}
+.day.push{border-top-color:var(--accent)}.day.pull{border-top-color:var(--pink)}.day.legs{border-top-color:var(--ok)}.day.upper{border-top-color:var(--blue)}.day.rest{border-top-color:var(--line);color:var(--muted)}
+.day.sel{background:var(--fg);color:var(--bg)}
+.day.sel .d{color:var(--bg);opacity:.75}
+.day.today .d::after{content:"·今";color:var(--accent);margin-left:2px}
+.day.sel.today .d::after{color:var(--pink)}
+.blocks{display:flex;gap:4px;padding:0 16px 10px;overflow-x:auto;scrollbar-width:none}
+.blocks::-webkit-scrollbar{display:none}
+.blocks button{flex:0 0 auto;font-size:.72rem;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.blocks button.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 
-/* 周表 */
-.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:.8rem}
-.week div{border:1px solid var(--line);background:var(--surface);padding:8px 6px;text-align:center;min-width:0;cursor:pointer;user-select:none}
-.week div:hover{border-color:var(--fg)}
-.week .d{font-family:var(--font-num);font-size:.8rem;color:var(--muted);letter-spacing:.08em}
-.week .t{font-weight:700;margin-top:2px;font-size:.95rem}
-.week .s{font-size:.72rem;color:var(--muted);line-height:1.3;margin-top:2px}
-.week .push{border-top:4px solid var(--accent)}
-.week .pull{border-top:4px solid var(--pink)}
-.week .legs{border-top:4px solid var(--ok)}
-.week .upper{border-top:4px solid var(--blue)}
-.week .rest{border-top:4px solid var(--line);color:var(--muted)}
-.week .today .d::after{content:" ·今天";color:var(--accent);letter-spacing:0}
-.week .sel{outline:2px solid var(--fg);outline-offset:1px;background:var(--bg)}
-@media (max-width:520px){.week{grid-template-columns:repeat(4,1fr)}}
-.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:.6rem;font-size:.84rem;color:var(--muted)}
-.legend i{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:5px}
+/* 卡片区 */
+.view{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.deck{flex:1 1 auto;min-height:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.deck::-webkit-scrollbar{display:none}
+.card{flex:0 0 100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;overscroll-behavior-y:contain;display:flex;flex-direction:column;min-width:0}
+.fig{background:var(--figbg);padding:14px 20px 6px;flex:0 0 auto}
+.fig svg{display:block;width:100%;max-width:300px;height:auto;max-height:36vh;margin:0 auto}
+.fig figcaption{font-size:.74rem;color:var(--muted);text-align:center;padding:4px 0 6px}
+.info{padding:14px 18px 24px;flex:1 0 auto}
+.info .blk{font-family:var(--font-num);font-size:.7rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.info h2{font-size:1.25rem;font-weight:800;margin-top:2px}
+.info .rx{display:inline-block;margin-top:4px;font-family:var(--font-num);font-weight:700;color:var(--accent);font-size:1rem;font-variant-numeric:tabular-nums}
+.info ul{margin:.6rem 0 0;padding-left:1.2em}
+.info li{font-size:.95rem}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.opts div{font-size:.84rem;padding:8px 10px;border:1px solid var(--line);border-radius:8px;min-width:0;line-height:1.5}
+.opts b{display:block;font-size:.68rem;letter-spacing:.12em;font-family:var(--font-num);text-transform:uppercase;margin-bottom:2px}
+.opts .down b{color:var(--ok)}.opts .up b{color:var(--accent)}
+@media (max-width:380px){.opts{grid-template-columns:1fr}}
+.card.restcard .info{padding-top:30px;text-align:center}
+.card.restcard .info ul{list-style:none;padding:0}
+.tbl{overflow-x:auto;margin-top:.6rem}
+table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:360px}
+th,td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+th{font-size:.72rem;letter-spacing:.06em;color:var(--muted);font-weight:500}
 
-/* 当天流程面板 */
-.plan{border:1px solid var(--line);background:var(--surface);margin-top:14px;padding:14px 16px}
-.plan h3{margin:0;font-size:1.1rem}
-.plan .sub{font-size:.84rem;color:var(--muted)}
-.plan ol{margin:.6rem 0 0;padding-left:1.4em}
-.plan li{margin:.25rem 0;font-size:.93rem}
-.plan li b{font-family:var(--font-num);font-weight:600;color:var(--accent);margin-right:6px}
-.plan .blk{display:block;font-size:.74rem;letter-spacing:.1em;color:var(--muted);font-family:var(--font-num);margin-top:.7rem}
-.plan a{font-size:.84rem;margin-left:6px}
+/* 底部 */
+.bottom{flex:0 0 auto;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav{display:flex;align-items:center;gap:10px;padding:8px 16px}
+.nav button.step{flex:1;padding:10px 0;border:1px solid var(--line);border-radius:10px;font-weight:700;font-size:.95rem}
+.nav button.step:disabled{opacity:.35}
+.nav .cnt{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-size:.85rem;color:var(--muted);min-width:64px;text-align:center}
+.tabs{display:flex;border-top:1px solid var(--line)}
+.tabs button{flex:1;padding:9px 0;font-size:.82rem;color:var(--muted);font-weight:600}
+.tabs button.on{color:var(--accent)}
 
-/* 时间轴 */
-.timeline{display:flex;margin-top:1rem;height:54px;border:1px solid var(--line)}
-.timeline div{min-width:0;display:flex;flex-direction:column;justify-content:center;padding:0 6px;font-size:.78rem;line-height:1.25;overflow:hidden;white-space:nowrap;border-right:1px solid var(--bg)}
-.timeline b{font-family:var(--font-num);font-weight:600;font-size:.9rem}
-.tl-warm{flex:8;background:#cfd8e3;color:#1c2026}
-.tl-hip{flex:8;background:#f1c2cf;color:#1c2026}
-.tl-core{flex:6;background:#f5d7b0;color:#1c2026}
-.tl-str{flex:26;background:var(--accent);color:#fff}
-.tl-cardio{flex:10;background:#2f8f5b;color:#fff}
-.tl-cool{flex:2;background:#aeb6bd;color:#1c2026}
-.ticks{display:flex;justify-content:space-between;font-family:var(--font-num);font-size:.75rem;color:var(--muted);margin-top:4px}
+/* 说明页 */
+.doc{flex:1 1 auto;min-height:0;overflow-y:auto;padding:16px 18px 32px}
+.doc h2{font-size:1.1rem;font-weight:800;margin-top:1.6rem;padding-top:.8rem;border-top:2px solid var(--fg)}
+.doc h2:first-child{margin-top:0;border:0;padding-top:0}
+.doc .lead{color:var(--muted)}
+.verdict{background:var(--ink);color:var(--ink-fg);padding:14px 16px;border-radius:10px;margin-top:.6rem;font-size:.93rem}
+.verdict p{margin:.4rem 0}
+.timeline{display:flex;margin-top:.8rem;height:48px;border-radius:8px;overflow:hidden}
+.timeline div{min-width:0;display:flex;flex-direction:column;justify-content:center;padding:0 5px;font-size:.7rem;line-height:1.2;overflow:hidden;white-space:nowrap}
+.timeline b{font-family:var(--font-num);font-size:.85rem}
+.tl-warm{flex:8;background:#cfd8e3;color:#1c2026}.tl-hip{flex:8;background:#f1c2cf;color:#1c2026}.tl-core{flex:6;background:#f5d7b0;color:#1c2026}.tl-str{flex:26;background:var(--accent);color:#fff}.tl-cardio{flex:10;background:#2f8f5b;color:#fff}.tl-cool{flex:2;background:#aeb6bd;color:#1c2026}
+.ladder{display:grid;gap:8px;margin-top:.6rem}
+.ladder div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:.88rem}
+.ladder b{display:block;font-family:var(--font-num);color:var(--accent);font-size:.74rem;letter-spacing:.1em}
+.note{border-left:4px solid var(--accent);background:var(--accent-soft);padding:9px 12px;margin:.8rem 0;font-size:.9rem;border-radius:0 8px 8px 0}
+.small{font-size:.84rem;color:var(--muted)}
 
-/* 动作卡片 */
-.ex{display:grid;grid-template-columns:150px 1fr;gap:16px;border:1px solid var(--line);background:var(--surface);padding:14px;margin-top:14px}
-.ex figure{margin:0;min-width:0}
-.ex figure svg{width:100%;height:auto;display:block}
-.ex figcaption{font-size:.74rem;color:var(--muted);text-align:center;margin-top:2px}
-.ex .body{min-width:0}
-.ex h4{margin:0;font-size:1.02rem;font-weight:700}
-.ex .rx{font-family:var(--font-num);color:var(--accent);font-weight:600;font-size:.95rem;margin-left:8px}
-.ex ul{margin:.3rem 0}
-.ex li{font-size:.92rem}
-.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.opts div{font-size:.84rem;padding:7px 9px;border:1px solid var(--line);min-width:0}
-.opts b{display:block;font-size:.72rem;letter-spacing:.1em;font-family:var(--font-num);text-transform:uppercase}
-.opts .down b{color:var(--ok)}
-.opts .up b{color:var(--accent)}
-@media (max-width:560px){.ex{grid-template-columns:1fr}.ex figure{max-width:220px;margin:0 auto}.opts{grid-template-columns:1fr}}
-
+/* 图示 */
 svg .body-line{fill:none;stroke:var(--fg);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
 svg .head{fill:var(--fg)}
 svg .ghost{fill:none;stroke:var(--muted);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:4 4;opacity:.7}
@@ -127,727 +125,128 @@ svg .cue{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:3 3}
 svg .arrow{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 svg .arrowhead{fill:var(--accent);stroke:none}
 svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weight:700}
-
-.day{margin-top:2.2rem;border-left:6px solid var(--accent);padding-left:14px;scroll-margin-top:12px}
-.day.pull{border-color:var(--pink)}
-.day.legs{border-color:var(--ok)}
-.day h3{margin-top:0;font-size:1.25rem}
-.day .mus{font-size:.86rem;color:var(--muted)}
-
-.tbl{overflow-x:auto;margin-top:.8rem}
-table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:420px}
-th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
-th{font-size:.78rem;letter-spacing:.08em;color:var(--muted);font-weight:500}
-td.num{white-space:nowrap}
-
-.ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:.8rem}
-.ladder div{background:var(--surface);border:1px solid var(--line);padding:10px;font-size:.86rem;min-width:0}
-.ladder b{display:block;font-family:var(--font-num);color:var(--accent);font-size:.78rem;letter-spacing:.1em}
-
-.note{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;margin:1rem 0;font-size:.92rem}
-.sec{scroll-margin-top:12px}
+@media (prefers-reduced-motion: no-preference){.deck{scroll-behavior:smooth}}
+.faq dt{font-weight:700;margin-top:.9rem}
+.faq dd{margin:.2rem 0 0;font-size:.93rem}
 </style>
-
+<style>
+body{display:block;overflow:auto;height:auto}
+.wrap{max-width:820px;margin:0 auto;padding-inline:18px;padding-block:24px 64px}
+.wrap h1{font-size:1.8rem;font-weight:900}
+.lead{color:var(--muted)}
+.dayhead{margin-top:2.6rem;padding-top:1rem;border-top:3px solid var(--fg)}
+.dayhead h2{font-size:1.4rem;font-weight:800;margin:0}
+.dayhead .sub{color:var(--muted);font-size:.9rem}
+.blockhead{font-family:var(--font-num);font-size:.72rem;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin:1.6rem 0 .2rem}
+.ex{display:grid;grid-template-columns:170px 1fr;gap:16px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:14px;margin-top:12px}
+.ex .fig{background:var(--figbg);border-radius:8px;padding:10px;min-width:0}
+.ex .fig svg{width:100%;height:auto;display:block}
+.ex .fig figcaption{font-size:.72rem;color:var(--muted);text-align:center;padding-top:4px}
+.ex .info{padding:0;min-width:0}
+.ex .info h2{font-size:1.05rem}
+.ex .info .blk{display:none}
+@media (max-width:560px){.ex{grid-template-columns:1fr}.ex .fig{max-width:240px;margin:0 auto}}
+.doc{padding:0;overflow:visible}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:1rem}
+.toc a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;text-decoration:none;color:var(--fg);background:var(--surface)}
+</style>
+</head>
+<body>
 <div class="wrap">
-  <div class="eyebrow">Morning · Push / Pull / Legs+Hip · 60 min · v2</div>
-  <h1>晨练推拉腿计划</h1>
-  <p class="lead">按你健身房的舒华器械（辅助单双杠、低拉划船、坐姿推肩、腿伸展机、哑铃、可爬坡的跑步机、椭圆机）和瑜伽室的泡沫轴设计，不用弹力带。每次 60 分钟，固定顺序：热身 → 练胯 + 圆肩矫正 → 核心 → 力量 → 爬坡。每个动作都给了退阶和"邪修"进阶。</p>
-
+  <div class="eyebrow" style="font-family:var(--font-num);font-size:.72rem;letter-spacing:.14em;color:var(--accent);text-transform:uppercase">Morning · Push / Pull / Legs+Hip · 60 min</div>
+  <h1>晨练推拉腿计划 · 长文版</h1>
+  <p class="lead">和手机卡片版（<a href="index.html">index.html</a>）是同一份数据，这里按训练日把所有动作顺序列出来，适合在电脑上通读。</p>
+  <div class="toc"><a href="#doc">说明</a><a href="#day-push">推日</a><a href="#day-pull">拉日</a><a href="#day-legs">腿胯日</a><a href="#day-upper">上肢混合（5 天版）</a></div>
+  <div class="doc" id="doc">
+  <h2>先说结论</h2>
   <div class="verdict">
-    <div class="eyebrow">先说结论</div>
-    <p><strong>用"推 / 拉 / 腿胯"三分化，6 天跑两轮，5 天周四休。</strong>上肢器械按推、拉分开；腿和胯现在有哑铃和腿伸展机，强度够了，再配长一点的爬坡。</p>
-    <p>每次前 22 分钟是固定的准备模块，每天都做：热身、胯、圆肩（哑铃后束飞鸟 + 俯身肩外旋 + 泡沫轴）、核心。体态问题靠每天小剂量累积，比某一天猛练有效，也最防受伤。</p>
+    <p><strong>用"推 / 拉 / 腿胯"三分化，6 天跑两轮，5 天周四休。</strong>上肢器械按推、拉分开；腿和胯用哑铃、腿伸展机加长一点的跑步机爬坡。</p>
+    <p><strong>每次按区域走一遍，不来回跑：</strong>跑步机 3 分钟起坡 → 瑜伽室（热身、胯、圆肩、核心，约 19 分钟）→ 器械区和哑铃区（力量 26 分钟，腿日先哑铃后器械，其他日先器械后哑铃）→ 跑步机有氧 10–15 分钟 → 拉伸 2 分钟。</p>
     <p>肚腩靠每周总消耗和饮食缺口，核心动作只负责让腰在深蹲、引体时稳住。</p>
   </div>
 
-  <h2 class="sec" id="week-sec">一周安排 · 点格子看当天流程</h2>
-  <div class="seg" role="group" aria-label="每周训练天数">
-    <button type="button" id="btn6" aria-pressed="true">一周 6 练</button>
-    <button type="button" id="btn5" aria-pressed="false">一周 5 练</button>
-  </div>
-  <p class="small" id="weekNote">6 天版：推拉腿各两次，周日休息。</p>
-  <div class="week" id="week"></div>
-  <div class="legend"><span><i style="background:var(--accent)"></i>推：胸 / 肩 / 三头</span><span><i style="background:var(--pink)"></i>拉：背 / 二头 / 后肩</span><span><i style="background:var(--ok)"></i>腿胯：臀 / 腿 / 髋</span><span><i style="background:var(--blue)"></i>上肢混合（5 天版）</span></div>
-
-  <div class="plan" id="plan"></div>
-
-  <h3>只练 5 天怎么排</h3>
-  <p><strong>周四休，腿日留在周三和周六。</strong>顺序是推、拉、腿、休、上肢混合、腿、休。两个腿日之间隔了三天，腿的恢复最充分；周三腿日练完正好接周四休息。砍掉的是第二个推日，周五的"上肢混合"以拉为主，再带两组推肩和双杠，推还是练到一次半，拉和腿各两次，偏向圆肩矫正和减脂。</p>
-
   <h2>每次 60 分钟怎么分</h2>
-  <div class="timeline">
-    <div class="tl-warm"><b>8'</b>热身</div>
-    <div class="tl-hip"><b>8'</b>胯·圆肩</div>
-    <div class="tl-core"><b>6'</b>核心</div>
-    <div class="tl-str"><b>26'</b>力量（腿日 22'）</div>
-    <div class="tl-cardio"><b>10'</b>爬坡</div>
-    <div class="tl-cool"><b>2'</b></div>
-  </div>
-  <div class="ticks"><span>0</span><span>15</span><span>30</span><span>45</span><span>60 min</span></div>
-  <p class="small">腿胯日力量缩到 22 分钟，爬坡拉长到 15 分钟。组间休息 60–90 秒，引体和双杠 90–120 秒。上肢日可以把两个不同肌群的动作交替做（超级组）省时间，腿日不要。</p>
+  <div class="timeline"><div class="tl-warm"><b>3'</b>跑步机</div><div class="tl-hip"><b>19'</b>瑜伽室</div><div class="tl-str"><b>26'</b>器械区 + 哑铃区</div><div class="tl-cardio"><b>10'</b>跑步机</div><div class="tl-cool"><b>2'</b></div></div>
+  <p class="small">腿日力量缩到 22 分钟，爬坡拉长到 15 分钟。组间休息 60–90 秒，引体和双杠 90–120 秒。力量开始前每个器械动作先用 50% 重量做 1 组 10 次热身组。标了"有时间再做"的动作可以砍。</p>
 
-  <h2 class="sec" id="prep">固定准备模块（每天都做，22 分钟）</h2>
+  <h2>一周怎么排</h2>
+  <p><strong>6 天版</strong>：推、拉、腿、推、拉、腿、休。</p>
+  <p><strong>5 天版</strong>：推、拉、腿、休、上肢混合、腿、休。周四休，两个腿日之间隔三天。砍掉的是第二个推日，周五的"上肢混合"以拉为主再带两组推肩和双杠。</p>
+  <p>任何一天状态差，就只做跑步机起坡加瑜伽室那 22 分钟，再走 20 分钟，不要硬上力量。</p>
 
-  <h3 id="warm">① 热身 · 8 分钟</h3>
-  <div class="tbl"><table>
-    <tr><th>顺序</th><th>内容</th><th>剂量</th><th>要点</th></tr>
-    <tr><td class="num">1</td><td>跑步机爬坡慢走</td><td class="num">3 分钟</td><td>你现在的坡度 6 / 速度 3 起坡就是这一段，不扶扶手</td></tr>
-    <tr><td class="num">2</td><td>泡沫轴胸椎伸展（图示见下）</td><td class="num">60 秒</td><td>只滚上背，不滚腰</td></tr>
-    <tr><td class="num">3</td><td>猫牛式</td><td class="num">8 次</td><td>一节一节地动脊柱，配合呼吸</td></tr>
-    <tr><td class="num">4</td><td>髋关节绕环</td><td class="num">每侧 5 圈</td><td>站姿扶墙，膝盖画最大的圈，骨盆不动</td></tr>
-    <tr><td class="num">5</td><td>世界最伟大拉伸</td><td class="num">每侧 4 次</td><td>右脚在前时：左手撑在右脚内侧，右手肘点地，再向上转开；换边相反</td></tr>
-    <tr><td class="num">6</td><td>肩胛绕环 + 徒手深蹲</td><td class="num">各 10 次</td><td>手臂自然下垂只动肩胛骨：耸起、后夹、下沉、前送；深蹲慢下快起</td></tr>
-  </table></div>
-  <p class="small">力量部分开始前，每个器械动作再用 50% 重量做 1 组 10 次热身组。</p>
-
-  <div class="ex">
-    <figure id="fig-foamroll"></figure>
-    <div class="body"><h4>泡沫轴胸椎伸展 <span class="rx">60 秒</span></h4>
-      <ul><li>泡沫轴横放在肩胛骨下缘，双手抱头护住颈椎，臀部<strong>不离地</strong>。</li><li>呼气时上背向后仰过泡沫轴，停 2 秒，回来。往上挪 2 cm 再做，一共 3–4 个位置。</li><li>只在肩胛骨区域滚，到腰部就停，腰不需要被滚。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>手臂抱胸不抱头，幅度减半。</div><div class="up"><b>邪修</b>仰过去的同时双臂伸直过头，拉背阔。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-catcow"></figure>
-    <div class="body"><h4>猫牛式 <span class="rx">8 次</span></h4>
-      <ul><li>四足跪姿，手在肩下，膝在髋下。</li><li>吸气塌腰抬头（牛），呼气拱背低头（猫），每个方向停 2 秒。</li><li>圆肩的人重点体会"拱背时把上背推向天花板"。</li></ul>
-    </div>
-  </div>
-  <div class="ex">
-    <figure id="fig-hipcar"></figure>
-    <div class="body"><h4>髋关节绕环 <span class="rx">每侧 5 圈</span></h4>
-      <ul><li>站姿，一只手扶墙，另一侧膝盖抬到髋高。</li><li>膝盖向外侧画一个<strong>尽量大的圈</strong>：抬起 → 打开到侧面 → 向后 → 放下，再反向画 5 圈。</li><li>骨盆和上身不动，只有髋在转。慢做，一圈 4 秒。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>圈画小一点，或者坐在凳子边上做。</div><div class="up"><b>邪修</b>不扶墙做，同时练平衡。</div></div>
-    </div>
-  </div>
-  <div class="ex">
-    <figure id="fig-wgs"></figure>
-    <div class="body"><h4>世界最伟大拉伸 <span class="rx">每侧 4 次</span></h4>
-      <ul><li>大弓步，后腿伸直。<strong>前脚内侧的那只手</strong>撑地，同侧手肘往前脚脚踝方向点下去，停 2 秒。</li><li>然后这只手向天花板转开，眼睛跟着手，上身转到最大，停 2 秒。</li><li>一次动作里包含了髋屈肌、胸椎旋转和大腿后侧，是热身里最值的一个动作。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>手肘点不到地就点到小腿；后膝跪地做。</div><div class="up"><b>邪修</b>转开后再把前腿伸直、臀部后坐，拉大腿后侧 2 秒再回来。</div></div>
-    </div>
-  </div>
-
-  <h3 id="hip">② 练胯 + 圆肩矫正 · 8 分钟</h3>
-  <p>先胯后肩。胯练髋的旋转和髋屈肌长度；圆肩用两个轻哑铃动作把后肩和肩袖练强，再把胸口拉开。这块每天都做，哑铃用最轻的，动作做慢。</p>
-
-  <div class="ex">
-    <figure id="fig-9090"></figure>
-    <div class="body"><h4>90/90 髋转换 <span class="rx">8 次</span></h4>
-      <ul><li>坐在地上，<strong>前腿</strong>：大腿朝正前方，膝盖弯 90°，小腿横在身前贴地；<strong>后腿</strong>：大腿朝正侧方，膝盖弯 90°，小腿朝身后贴地。两边各一个直角。</li><li>上身坐直，两个膝盖同时向另一侧倒下去，变成左右镜像，手尽量不撑地。</li><li>练的是髋的内旋和外旋，这是"胯活不活"的核心。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>手撑在身后，或坐在叠起的瑜伽垫上。</div><div class="up"><b>邪修</b>每个姿势底部停 3 秒，再向前腿方向俯身 5 次。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-hipflexor"></figure>
-    <div class="body"><h4>跪姿髋屈肌拉伸 <span class="rx">每侧 30 秒</span></h4>
-      <ul><li>后腿跪地，前脚踩实。关键是<strong>先收紧后腿那侧的臀部、骨盆后倾</strong>，再轻微前移。</li><li>腰不塌，上身直立。拉伸感应该在大腿根前侧，不是腰。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>膝下垫瑜伽垫对折，手扶墙。</div><div class="up"><b>邪修</b>同侧手举过头并向对侧侧弯。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-rearfly"></figure>
-    <div class="body"><h4>俯身哑铃后束飞鸟 <span class="rx">2 × 15</span></h4>
-      <ul><li>就是你说的那个动作：半蹲，上身前倾到<strong>肚子几乎贴着大腿</strong>，背平直，两只轻哑铃垂在小腿前。</li><li>肘微弯并固定住，<strong>手臂向左右两侧打开</strong>，像展开翅膀，抬到和肩膀一样高，顶点停 1 秒，感受后肩和两块肩胛骨中间夹紧。是向两侧"飞"，不是贴着身体向后"拉"。</li><li>这里用 2–4 kg，做慢，不借力甩。它代替弹力带面拉，练后束和中下斜方，是圆肩矫正的主力。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>坐在长凳边上做，或者额头抵在墙上做，腰就不用撑。</div><div class="up"><b>邪修</b>顶点停 3 秒；或者抬到顶后拇指转向上（外旋）再放下。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-extrot"></figure>
-    <div class="body"><h4>俯身 90° 肩外旋 <span class="rx">2 × 每侧 12（1 kg 起）</span></h4>
-      <ul><li>和后束飞鸟同样的俯身姿势，一只手拿哑铃，<strong>大臂向侧面抬到与肩同高</strong>，肘弯 90°，小臂垂向地面。</li><li>大臂和肘不动，只把小臂像门轴一样向前转起来，转到小臂和地面平行，停 1 秒，再 2 秒放回。</li><li>这是肩袖（冈下肌、小圆肌），它弱的时候双杠和推肩最容易伤肩。哑铃用最轻的，1 kg 就够。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>没有哑铃就做门框等长：站在门框边，肘贴体侧弯 90°，手背顶住门框往外推，用力 10 秒 × 5 次，每侧都做。</div><div class="up"><b>邪修</b>趴在长凳上做更稳，可以上到 2–3 kg；或侧卧版：侧躺，肘贴体侧夹毛巾，小臂向天花板转。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-cheststretch"></figure>
-    <div class="body"><h4>墙角胸部拉伸 <span class="rx">每侧 20 秒</span></h4>
-      <ul><li>侧身站在墙边，小臂贴墙，<strong>肘和肩同高</strong>，手肘弯 90°。</li><li>身体慢慢向另一侧转开，直到胸口有拉伸感。感觉在肩前侧或有刺痛就说明肘太高了，把肘放低一点。</li><li>圆肩的人胸小肌很短，这 20 秒是在给后面的后束飞鸟腾空间。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>肘放到比肩低 10 cm。</div><div class="up"><b>邪修</b>肘抬到比肩高 10 cm 再做一组，拉到胸大肌的另一束。</div></div>
-    </div>
-  </div>
-  <div class="ex">
-    <figure id="fig-chintuck"></figure>
-    <div class="body"><h4>下巴后缩 <span class="rx">10 次</span></h4>
-      <ul><li>视线平视，把下巴<strong>水平</strong>往后推，像在做双下巴，停 2 秒，放松。</li><li>不是低头，也不是仰头，头的高度不变。</li><li>头前伸和圆肩是一对，这个动作把头拉回肩膀正上方。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>靠墙做，后脑勺往墙上轻轻压。</div><div class="up"><b>邪修</b>后缩之后再把头向后仰 2 秒。</div></div>
-    </div>
-  </div>
-  <p class="small">靠墙天使移到推日收尾。</p>
-
-
-  <h3 id="core">③ 核心 · 6 分钟</h3>
-  <p>两套轮换：推日和腿日做 A，拉日做 B。任务是抗伸展、抗旋转、抗侧屈，所以没有仰卧起坐。</p>
-
-  <div class="ex">
-    <figure id="fig-deadbug"></figure>
-    <div class="body"><h4>A · 死虫 <span class="rx">3 × 每侧 8</span></h4>
-      <ul><li>仰卧，膝盖 90° 抬起，手臂指向天花板。</li><li>呼气时对侧手脚同时伸远，<strong>腰始终压在地上</strong>，腰一拱就是伸太远。</li><li>慢做，每次 3 秒。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>只动腿不动手，或脚不放到底。</div><div class="up"><b>邪修</b>脚跟伸直悬在离地 5 cm；或者双手各拿一只 2 kg 哑铃。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-plank"></figure>
-    <div class="body"><h4>A · 平板支撑 <span class="rx">3 × 30–45 秒</span></h4>
-      <ul><li>肘在肩正下方，脚后跟向后蹬，臀夹紧，身体从头到脚一条直线。</li><li>"肋骨下沉、骨盆后倾"，不撅屁股不塌腰。</li><li>45 秒还轻松就不要加时间，去做邪修版。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>膝盖着地，20 秒 × 4 组。</div><div class="up"><b>邪修</b>轮流抬一只脚各 10 秒，或脚垫高。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-birddog"></figure>
-    <div class="body"><h4>A · 鸟狗式 <span class="rx">2 × 每侧 8</span></h4>
-      <ul><li>四足跪姿，对侧手脚伸出去，与背同高即可。</li><li>伸出去停 2 秒，收回时手肘碰膝盖。背上想象放一杯水。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>只伸腿，或只伸手。</div><div class="up"><b>邪修</b>伸直后在空中画 5 个小圈再收回。</div></div>
-    </div>
-  </div>
-
-  <p><strong>B 套（拉日）</strong>：下面三个动作。</p>
-  <div class="ex">
-    <figure id="fig-sideplank"></figure>
-    <div class="body"><h4>B · 侧平板 <span class="rx">2 × 每侧 30 秒</span></h4>
-      <ul><li>侧躺，肘在肩正下方，<strong>小臂朝前</strong>（和身体垂直，不是顺着身体），把髋顶起来，头、髋、脚一条直线。</li><li>上面的手放在髋上。髋不要往后掉、也不要往前塌。</li><li>练的是腹斜肌和腰方肌，抗侧屈。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>膝盖着地，20 秒 × 3。</div><div class="up"><b>邪修</b>上面的腿抬起停住；或髋做上下 10 次。</div></div>
-    </div>
-  </div>
-  <div class="ex">
-    <figure id="fig-carry"></figure>
-    <div class="body"><h4>B · 单手哑铃农夫行走 <span class="rx">2 × 每侧 30 秒</span></h4>
-      <ul><li>一只手提 10–16 kg 哑铃，另一只手空着，在瑜伽室来回走。</li><li><strong>身体不能往哑铃那边歪</strong>，肩不耸，眼睛平视，步子正常。</li><li>这是抗侧屈，顺带练握力和肩胛稳定，对划船和引体都有帮助。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>减到 8 kg，或者原地站 30 秒不走。</div><div class="up"><b>邪修</b>把哑铃举过头顶走，肘锁直，腰不拱。</div></div>
-    </div>
-  </div>
-  <div class="ex">
-    <figure id="fig-revcrunch"></figure>
-    <div class="body"><h4>B · 反向卷腹 <span class="rx">2 × 12</span></h4>
-      <ul><li>仰卧，膝盖弯 90° 抬起，手放身侧按地。</li><li>呼气，用<strong>下腹把骨盆卷离地面</strong>，膝盖往胸口方向，停 1 秒，再 3 秒放回去。</li><li>是骨盆在动，不是腿在甩；甩腿是用髋屈肌。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>幅度减半，只把骨盆卷离地 2 cm。</div><div class="up"><b>邪修</b>放回时脚跟不落地，腿伸直悬着 2 秒。</div></div>
-    </div>
-  </div>
-
-
-  <div class="ex">
-    <figure id="fig-kneeraise"></figure>
-    <div class="body"><h4>B · 邪修版：悬垂举腿 <span class="rx">3 × 8–12</span></h4>
-      <ul><li>吊在单双杠训练器的引体把手上，肩胛先下沉再举腿。</li><li>膝盖提到和髋同高，再<strong>把骨盆向上卷</strong>，这一下才是练下腹。</li><li>不摇晃，下放 3 秒。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>先把反向卷腹做到 15 次标准再上。</div><div class="up"><b>邪修</b>直腿举到水平（L 举）。</div></div>
-    </div>
-  </div>
-
-  <h2>力量部分（26 分钟，轮换）</h2>
-  <p>所有有重量的动作用<strong>双重渐进</strong>：先在固定重量下把次数做到区间上限，并且每组还剩 2 次余力（RIR 2），下一次才加重一格或减一格辅助。哑铃一次加 1–2 kg。</p>
-
-  <div class="day" id="day-push">
-    <h3>推日 · 胸 / 肩 / 三头</h3>
-    <div class="mus">器械：辅助双杠、坐姿推肩、哑铃 · 瑜伽室：靠墙天使、肩胛俯卧撑</div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-dip"></figure>
-    <div class="body"><h4>辅助双杠臂屈伸 <span class="rx">3 × 8–12</span></h4>
-      <ul><li>两手握住身体两侧的两根把手，掌心相对，膝盖跪在踏板上。辅助重量从"刚好能做 12 次"开始，之后每周减一格。</li><li>身体略前倾练胸，直立偏三头。<strong>肘到 90° 就停</strong>，不要为了深度把肩往前顶。</li><li>肩胛全程下沉，不耸肩；下放 2 秒，推起 1 秒。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>肩前侧有任何刺痛就换成上斜俯卧撑。或只做"顶端撑住 10 秒"的等长。</div><div class="up"><b>邪修</b>辅助减到 0 后做无辅助；再进一步 4 秒慢放，或最后一组做到力竭留 1。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-press"></figure>
-    <div class="body"><h4>坐姿推肩 <span class="rx">3 × 10–12</span></h4>
-      <ul><li>调座椅让把手起始位置在耳朵高度。<strong>下放到耳朵即可</strong>。</li><li>腰和上背贴靠背，脚踩实，推的时候肋骨不往上翻。</li><li>推肩前刚做过肩外旋，肩袖是热的，这个顺序不要换。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>只做上半程；或减重做 15 次体会肩胛不耸。</div><div class="up"><b>邪修</b>最后一组递减：做完 10 次马上减两格再做到力竭留 1。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-rearfly2"></figure>
-    <div class="body"><h4>俯身哑铃后束飞鸟（加重版） <span class="rx">3 × 12–15</span></h4>
-      <ul><li>和准备模块里的是同一个动作，这里上重量：4–8 kg，照样肚子贴大腿、背平、肘往天花板走。</li><li>推日练完胸和前肩，马上用它把后肩补平衡，前后拉力对等，肩才不会被拉向前。</li><li>下放 2 秒，顶点停 1 秒，不耸肩不甩。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>坐在长凳边上做，减掉腰的负担。</div><div class="up"><b>邪修</b>最后一组做完 12 次后换轻一半的哑铃再做 12 次。想补中束就再加哑铃侧平举 2 × 12。</div></div>
-    </div>
-  </div>
-
-  <p><strong>收尾动作</strong>：下面三个，时间不够就先砍俯卧撑。</p>
-  <div class="ex">
-    <figure id="fig-scappush"></figure>
-    <div class="body"><h4>肩胛俯卧撑 <span class="rx">2 × 12</span></h4>
-      <ul><li>俯卧撑起始姿势，<strong>手臂全程伸直</strong>，肘不弯。</li><li>只动肩胛骨：让胸口往地面沉、两块肩胛骨夹到一起，再把地面推开、肩胛骨分开、上背拱起。</li><li>练的是前锯肌，它弱的时候肩胛会翘起来、肩会往前滚。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>膝盖着地做；或站着双手推墙做。</div><div class="up"><b>邪修</b>单手撑墙做；或在平板支撑顶端停 3 秒。</div></div>
-    </div>
-  </div>
-
-
-  <div class="ex">
-    <figure id="fig-wallangel"></figure>
-    <div class="body"><h4>靠墙天使 <span class="rx">10 次</span></h4>
-      <ul><li>背贴墙，脚离墙一掌，腰、上背、后脑都贴墙。</li><li>手臂成 W，手背和手肘尽量贴墙，慢慢向上滑成 Y，再滑回来。</li><li>腰一旦离墙就说明举过头了。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>只保证腰贴墙，幅度做一半。</div><div class="up"><b>邪修</b>Y 的顶端停 3 秒。</div></div>
-    </div>
-  </div>
-  <div class="ex">
-    <figure id="fig-pushup"></figure>
-    <div class="body"><h4>俯卧撑 <span class="rx">2 组，力竭留 2</span></h4>
-      <ul><li>手比肩略宽，<strong>肘和身体夹角 45°</strong>，不要外展成 90°，那样最伤肩。</li><li>身体一条直线下到胸口离地一拳，推起来。臀夹紧，腰不塌。</li><li>下 2 秒，起 1 秒。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>手撑在长凳上做上斜俯卧撑；或跪姿。</div><div class="up"><b>邪修</b>脚垫高；或 4 秒慢放。</div></div>
-    </div>
-  </div>
-
-  <div class="day pull" id="day-pull">
-    <h3>拉日 · 背 / 二头 / 后肩</h3>
-    <div class="mus">器械：辅助引体、低拉划船、哑铃 · 瑜伽室：俯卧 Y-T-W</div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-chin"></figure>
-    <div class="body"><h4>辅助引体向上 <span class="rx">3 × 6–10</span></h4>
-      <ul><li>辅助重量从"刚好能做 10 次"开始。</li><li>每一次先<strong>肩胛下沉</strong>，再拉；顶点胸口对杠而不是下巴够杠。</li><li>下放到手臂伸直但肩胛还有一点力，下放 3 秒。有窄的对握把手就先用它。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>先只做"肩胛引体" 2 × 8，再做辅助最多的全程。</div><div class="up"><b>邪修</b>离心引体：踩踏板上去，5 秒慢放，3 × 5；辅助减到 0 后做无辅助。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-row"></figure>
-    <div class="body"><h4>低拉划船 <span class="rx">3 × 10–15</span></h4>
-      <ul><li>膝微曲，上身微后仰 10°，<strong>整组上身不动</strong>。</li><li>肘贴着身体向后拉到髋旁，顶点停 1 秒夹背，3 秒放回。</li><li>放回时允许肩胛向前滑开。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>减重做 15 次，专注顶峰停顿。</div><div class="up"><b>邪修</b>顶峰停 2 秒 + 4 秒慢放；或最后一组 1.5 次法。</div></div>
-    </div>
-  </div>
-
-  <p><strong>收尾动作</strong>：下面两个。</p>
-  <div class="ex">
-    <figure id="fig-ytw"></figure>
-    <div class="body"><h4>俯卧 Y-T-W <span class="rx">各 10 次 × 2 组</span></h4>
-      <ul><li>趴在垫子上，额头轻点地，双腿伸直。三个字母说的是<strong>从天花板往下看</strong>时手臂和身体摆出的形状。</li><li><strong>Y</strong>：两臂伸直斜向前上方，和身体成 Y。<strong>T</strong>：两臂伸直向左右平伸，和身体成 T。<strong>W</strong>：手肘弯曲收到身侧，手在肩膀旁边，和身体成 W。</li><li>每个字母做法一样：摆好形状 → 拇指朝上 → 把手臂<strong>抬离地面约 10 cm</strong>，停 2 秒 → 放下，做 10 次，再换下一个字母。重点是肩胛骨往下、往中间夹，腰不用力。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>每个姿势做 6 次；或者只做 T 和 W。</div><div class="up"><b>邪修</b>每只手拿 1 kg 哑铃；或每个姿势顶端停 4 秒。</div></div>
-    </div>
-  </div>
-  <div class="ex">
-    <figure id="fig-hammer"></figure>
-    <div class="body"><h4>哑铃锤式弯举 <span class="rx">2 × 10–12</span></h4>
-      <ul><li>站姿，掌心相对握哑铃（哑铃竖着像锤子），<strong>肘贴在体侧不往前移</strong>。</li><li>弯举到小臂略过水平，停 1 秒，3 秒放下。</li><li>练肱二头和肱桡肌，对引体的下放阶段有帮助。4–8 kg 起。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>坐着做，背靠墙，去掉腰的借力。</div><div class="up"><b>邪修</b>最后一组做完 12 次后换轻一半再做 10 次；或者单臂慢放 5 秒。</div></div>
-    </div>
-  </div>
-
-
-  <div class="day legs" id="day-legs">
-    <h3>腿胯日 · 臀 / 腿 / 髋</h3>
-    <div class="mus">器械：哑铃、腿伸展机 · 瑜伽室：臀桥、蚌式 · 爬坡 15 分钟。没有旧伤但要保护膝和腰，所以蹲和硬拉都从轻重量、慢速度开始。</div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-goblet"></figure>
-    <div class="body"><h4>哑铃高脚杯深蹲 <span class="rx">3 × 10–12</span></h4>
-      <ul><li>双手捧一只哑铃抵在胸口，脚与肩同宽脚尖微外，<strong>脚跟踩实</strong>，蹲到大腿与地面平行或略低。</li><li>膝盖对着脚尖方向，不内扣。下 3 秒，底部停 1 秒，起来。</li><li>胸口的哑铃会逼你挺直上背，这是对圆肩友好的蹲法。从 10–12 kg 开始。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>蹲到后面放个长凳，坐到凳子再起（箱式蹲）。</div><div class="up"><b>邪修</b>加到 20 kg 以上后改 5 秒慢放；或者底部停 3 秒。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-rdl"></figure>
-    <div class="body"><h4>哑铃罗马尼亚硬拉 <span class="rx">3 × 10–12</span></h4>
-      <ul><li>两只哑铃贴着大腿，<strong>臀部向后推</strong>，膝盖只微弯，上身随着髋折叠下去，背全程平直。</li><li>下到大腿后侧明显拉紧（哑铃到膝盖下方一点）就起来，起身时臀夹紧站直，不要仰腰。</li><li>这是"练胯"最有用的负重动作：髋铰链。每侧 8–10 kg 起。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>只用一只哑铃，幅度到膝盖；或先做徒手版手摸膝盖练髋铰链。</div><div class="up"><b>邪修</b>单腿罗马尼亚硬拉 3 × 每侧 8，扶墙平衡。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-legext"></figure>
-    <div class="body"><h4>腿伸展机 <span class="rx">2 × 12–15</span></h4>
-      <ul><li>调靠背让<strong>膝盖对准机器转轴</strong>，滚垫在脚踝上方。</li><li>伸直顶端停 1 秒，下放 3 秒，不要在底部让配重片砸回去。</li><li>这个动作膝盖受力集中，先用轻重量找股四头发力，2 周后再加重。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>只做上半程（膝盖 90° 到伸直）。</div><div class="up"><b>邪修</b>单腿 2 × 每侧 12；或最后一组顶端停 3 秒。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-split"></figure>
-    <div class="body"><h4>分腿蹲 <span class="rx">2 × 每侧 10</span></h4>
-      <ul><li>前后脚拉开一大步，<strong>后膝向地面垂直落</strong>，前膝对着脚尖方向。</li><li>上身直立，重心在前脚全脚掌，起来时前脚跟发力。先做弱的那一侧。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>手扶墙，幅度一半。</div><div class="up"><b>邪修</b>双手各拿一只哑铃；再进一步后脚垫在长凳上。</div></div>
-    </div>
-  </div>
-
-  <div class="ex">
-    <figure id="fig-bridge"></figure>
-    <div class="body"><h4>臀桥 <span class="rx">2 × 15</span></h4>
-      <ul><li>仰卧屈膝，脚跟离臀一脚掌远，用<strong>臀部</strong>把髋顶到肩膝一条线，顶端停 2 秒。</li><li>顶端肋骨不翻，收下巴看膝盖。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>幅度减半。</div><div class="up"><b>邪修</b>髋上放一只哑铃；或单腿臀桥 2 × 每侧 10。</div></div>
-    </div>
-  </div>
-
-  <p><strong>时间富余时加这两个</strong>：</p>
-  <div class="ex">
-    <figure id="fig-clam"></figure>
-    <div class="body"><h4>侧卧蚌式 <span class="rx">2 × 每侧 15</span></h4>
-      <ul><li>侧躺，膝盖弯 45°，<strong>脚跟并拢不分开</strong>。</li><li>上面的膝盖像蚌壳一样打开到最大，顶端停 2 秒，再慢慢合上。</li><li>骨盆不能往后翻，一只手按在髋上感受。练臀中肌，这是"练胯"里稳定骨盆的那块肌肉。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>幅度减半。</div><div class="up"><b>邪修</b>顶端停 3 秒；或上面的脚也抬离下面的脚（反向蚌式）。</div></div>
-    </div>
-  </div>
-  <div class="ex">
-    <figure id="fig-calf"></figure>
-    <div class="body"><h4>提踵 <span class="rx">2 × 20</span></h4>
-      <ul><li>脚掌前半踩在台阶边缘，脚跟悬空，手扶墙。</li><li>脚跟先<strong>沉到最低</strong>停 1 秒，再踮到最高停 1 秒。</li><li>慢做，2 秒上 2 秒下。</li></ul>
-      <div class="opts"><div class="down"><b>退阶</b>平地做。</div><div class="up"><b>邪修</b>单腿提踵，顶端停 2 秒。</div></div>
-    </div>
-  </div>
-
-
-  <h2 class="sec" id="cardio">跑步机爬坡怎么走（按你现在的数据改）</h2>
-  <p>你现在：起坡 3–5 分钟用坡度 6 / 速度 3，然后坡度 8–12、速度 3.8–4.5，一共 10–15 分钟。这个结构是对的，起坡段直接算进热身的 3 分钟。舒华跑步机面板上的坡度是百分比，下表按百分比。要改的是<strong>速度</strong>：3.8–4.5 对 174 cm 的人偏慢，步幅拉不开，臀和腿后侧用不上。</p>
-  <div class="tbl"><table>
-    <tr><th>阶段</th><th>坡度</th><th>速度 km/h</th><th>时长</th><th>说明</th></tr>
-    <tr><td>第 1–2 周</td><td class="num">8–10</td><td class="num">4.5 → 5.0</td><td class="num">10'</td><td>每周加 0.2，先把速度提上来，坡度不动</td></tr>
-    <tr><td>第 3–4 周</td><td class="num">10</td><td class="num">5.0 → 5.5</td><td class="num">10'（腿日 15'）</td><td>能说话但不能唱歌的强度，心率约 125–145</td></tr>
-    <tr><td>第 5 周起</td><td class="num">10–12</td><td class="num">5.5</td><td class="num">10'（腿日 15–20'）</td><td>速度到 5.5 后再加坡度；邪修版每 2 分钟 8 / 14 交替</td></tr>
-  </table></div>
-  <ul>
-    <li>不扶扶手。扶了坡度就白设了，还会把圆肩带进去。</li>
-    <li><strong>椭圆机</strong>当备用：腿日第二天早晨腿还酸、或者脚踝膝盖有不舒服，就把爬坡换成椭圆机 12–15 分钟，阻力调到能说话的强度，手要真的拉推把手，上背会一起练到。</li>
-    <li>一周有氧累计 60–80 分钟，加上力量，这个量减脂够了。想快一点就把周日改成 40 分钟户外快走，不要再加训练日。</li>
-  </ul>
-
-  <h2>怎么逐步提升</h2>
+  <h2>重量怎么加</h2>
+  <p>所有有重量的动作用<strong>双重渐进</strong>：先在固定重量下把次数做到区间上限，并且每组还剩 2 次余力，下一次才加重一格或减一格辅助。哑铃一次加 1–2 kg。</p>
   <div class="ladder">
-    <div><b>第 1–2 周</b>学动作。所有力量动作留 3 次余力，新动作（高脚杯、硬拉、腿伸展）用最轻重量。</div>
+    <div><b>第 1–2 周</b>学动作。所有力量动作留 3 次余力，新动作（高脚杯、硬拉、腿伸展、后束划船）用最轻重量。</div>
     <div><b>第 3–4 周</b>按双重渐进加重；爬坡速度提到 5.0–5.5。</div>
     <div><b>第 5 周</b>减量周。重量不变，组数砍一半，爬坡照常。</div>
     <div><b>第 6–8 周</b>启用邪修版：先离心慢放，再上无辅助引体 / 双杠、单腿硬拉。</div>
     <div><b>8 周后</b>重新评估。引体辅助归零、双杠无辅助 8 次时再考虑 4 分化。</div>
   </div>
+  <div class="note"><strong>停下的信号</strong>：关节的尖锐痛、刺痛、第二天还在的痛，立刻换退阶或跳过。肌肉的酸胀是正常的。肩前侧痛最常见于双杠和推肩，先把深度减半；膝盖前侧痛最常见于腿伸展机和深蹲太快，先减重放慢；腰痛最常见于硬拉弓背和划船甩腰，先减重练髋铰链。</div>
 
-  <div class="note">
-    <strong>停下的信号</strong>：关节的尖锐痛、刺痛、第二天还在的痛，立刻换退阶或跳过。肌肉的酸胀是正常的。肩前侧痛最常见于双杠和推肩，先把深度减半；膝盖前侧痛最常见于腿伸展机和深蹲太快，先减重放慢；腰痛最常见于硬拉弓背和划船甩腰，先减重练髋铰链。
-  </div>
+  <h2>你问过的几个问题</h2>
+  <dl class="faq">
+    <dt>平板和侧平板哪个更好？</dt><dd>不是二选一。平板练抗伸展（身体前面），侧平板练抗侧屈（腹斜肌、腰方肌，管两侧和骨盆稳定）。你平板 45 秒已经到了该加难度的点，不要再加时间：抬一只脚、脚垫高，或者一手一脚同时抬。</dd>
+    <dt>反向卷腹是臀桥吗？我能做 3 × 46 次。</dt><dd>不是。臀桥是脚踩地把髋顶起来，练臀。反向卷腹是膝盖弯 90° 抬起，用下腹把骨盆卷离地面、膝盖往胸口走。一组能做 46 次，基本可以肯定是在用髋屈肌甩腿，骨盆没有卷起来。标准做法一组 12 次做慢（上 2 秒、停 1 秒、下 3 秒）就会很累。方案里已经换成你截图的坐姿收腿和双腿画半圆。</dd>
+    <dt>悬垂举腿会晃。</dt><dd>晃就是在借惯性。先吊稳、骨盆微微后卷，呼气举到大腿水平停 1 秒，3 秒放下，放到底后等身体完全停住再做下一次。宁可 6 次标准，不要 12 次晃的。</dd>
+    <dt>跑步机爬坡算放松吗？</dt><dd>不算。10–15 分钟是有氧，强度是能说话不能唱歌。放松是最后 2 分钟把坡度降到 2、速度降到 3 慢走，加下来后 2 分钟拉伸。</dd>
+    <dt>分腿蹲是保加利亚蹲吗？</dt><dd>不是。分腿蹲两只脚都在地上；保加利亚分腿蹲是后脚垫在凳子上的进阶版，在分腿蹲的邪修里。</dd>
+    <dt>90/90 不撑手做不到。</dt><dd>撑手完全可以，它练的是髋不是腰腹。方案已换成仰卧膝盖左右倒，躺着做，肚腩不碍事；90/90 留在邪修里，标准写在那张卡上。</dd>
+    <dt>后束那个动作到底是飞鸟还是拉？</dt><dd>是你截图的那个：趴在大腿上，手肘向外张开、往后上方顶，哑铃到胸口两侧，大臂和躯干成 T。方案里叫"俯身哑铃后束划船"。它和贴着身体往后划的划船不同，那个练背阔。</dd>
+    <dt>肩外旋到底怎么动？</dt><dd>大臂抬平到与肩同高后位置不变，只有小臂以手肘为轴从朝下转到朝上，像雨刮器。大臂不是不动，而是在肩窝里原地转。方案改成站姿版，正视图一看就懂。</dd>
+  </dl>
 
-  <h2>每周记录这几项</h2>
+  <h2>跑步机爬坡</h2>
+  <p>你现在：起坡 3–5 分钟用坡度 6 / 速度 3，然后坡度 8–12、速度 3.8–4.5。结构是对的，起坡段直接算进热身。要改的是速度：3.8–4.5 偏慢，步幅拉不开，臀和腿后侧用不上。坡度按面板百分比。</p>
+  <div class="tbl"><table>
+    <tr><th>阶段</th><th>坡度</th><th>速度 km/h</th><th>时长</th><th>说明</th></tr>
+    <tr><td>第 1–2 周</td><td>8–10</td><td>4.5 → 5.0</td><td>10'</td><td>每周加 0.2，先提速度</td></tr>
+    <tr><td>第 3–4 周</td><td>10</td><td>5.0 → 5.5</td><td>10'（腿日 15'）</td><td>能说话不能唱歌，心率约 125–145</td></tr>
+    <tr><td>第 5 周起</td><td>10–12</td><td>5.5</td><td>10'（腿日 15–20'）</td><td>速度到 5.5 再加坡；邪修每 2 分钟 8 / 14 交替</td></tr>
+  </table></div>
   <ul>
-    <li>每个器械和哑铃动作的重量和每组次数，一行一次。</li>
-    <li>每周同一天早晨空腹体重，取周均值。</li>
-    <li>训练完的主观感受 1–5 分。连续三天 ≤ 2 分就安排一天只做准备模块加散步。</li>
+    <li>不扶扶手。扶了坡度就白设了，还会把圆肩带进去。</li>
+    <li>椭圆机当备用：腿日第二天腿还酸、脚踝膝盖不舒服，就换椭圆机 12–15 分钟，手要真的拉推把手。</li>
+    <li>一周有氧累计 60–80 分钟够用。想快就把周日改成 40 分钟户外快走，不要再加训练日。</li>
   </ul>
 
-  <h2>吃和睡（按你现在的习惯微调）</h2>
+  <h2>每周记录</h2>
   <ul>
-    <li><strong>练前</strong>：45 分钟前一根香蕉，保持。练得久或头晕就再加一片面包。</li>
-    <li><strong>练后</strong>：香蕉 + 3–4 个鸡蛋大约 20–26 g 蛋白，略少。改成 2 个全蛋 + 2 个蛋白 + 300 ml 牛奶或 200 g 无糖酸奶，蛋白到 35 g 左右，热量基本不变。</li>
-    <li><strong>全天</strong>蛋白质 125–150 g。早餐那顿只占三分之一，午餐和晚餐各要一掌大小的肉、鱼或豆制品（约 150 g）。</li>
-    <li>热量缺口每天 300–500 kcal，体重每周掉 0.3–0.5 kg。更快会掉肌肉。</li>
-    <li>睡够 7 小时。早晨训练最大的敌人是前一晚睡 5 小时。</li>
+    <li>每个器械和哑铃动作的重量和每组次数。</li>
+    <li>每周同一天早晨空腹体重取周均值。</li>
+    <li>训练后主观感受 1–5 分，连续三天 ≤ 2 分就安排一天只做瑜伽室部分加散步。</li>
   </ul>
-  <p class="small">本方案是通用健身建议，不是医疗意见。有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
+
+  <h2>吃和睡</h2>
+  <ul>
+    <li><strong>练前</strong>：45 分钟前一根香蕉，保持。</li>
+    <li><strong>练后</strong>：香蕉 + 3–4 个鸡蛋只有 20–26 g 蛋白。改成 2 个全蛋 + 2 个蛋白 + 300 ml 牛奶或 200 g 无糖酸奶，蛋白到 35 g，热量基本不变。</li>
+    <li><strong>全天</strong>蛋白质 125–150 g。午餐和晚餐各要一掌大小的肉、鱼或豆制品。</li>
+    <li>热量缺口每天 300–500 kcal，体重每周掉 0.3–0.5 kg。</li>
+    <li>睡够 7 小时。</li>
+  </ul>
+
+  <h2>动作要点参考</h2>
+  <p class="small">动作名称、要点和肌群对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>（873 个动作，含分解照片和步骤说明，Unlicense）。图示是按这些说明画的示意图，照片版可在 <a href="https://yuhonas.github.io/free-exercise-db/" target="_blank" rel="noopener">它的网页</a> 里按英文名搜索查看。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
 </div>
-
+  <div id="days"></div>
+</div>
+<script src="data.js"></script>
 <script>
 (function(){
-  /* ---------- 图示 ---------- */
-  function pl(pts,cls){return '<polyline class="'+cls+'" points="'+pts.map(p=>p.join(',')).join(' ')+'"/>';}
-  function arrow(x1,y1,x2,y2){
-    var a=Math.atan2(y2-y1,x2-x1),s=6,hx=x2-Math.cos(a)*2,hy=y2-Math.sin(a)*2;
-    var p1=[hx-Math.cos(a-0.5)*s,hy-Math.sin(a-0.5)*s],p2=[hx-Math.cos(a+0.5)*s,hy-Math.sin(a+0.5)*s];
-    return '<line class="arrow" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/><polygon class="arrowhead" points="'+x2+','+y2+' '+p1.join(',')+' '+p2.join(',')+'"/>';
-  }
-  function arcArrow(cx,cy,r,a0,a1){
-    var n=16,pts=[];for(var i=0;i<=n;i++){var a=a0+(a1-a0)*i/n;pts.push([+(cx+r*Math.cos(a)).toFixed(1),+(cy+r*Math.sin(a)).toFixed(1)]);}
-    return pl(pts,'arrow')+arrow(pts[n-1][0],pts[n-1][1],pts[n][0],pts[n][1]);
-  }
-  function fig(o){
-    var w=o.w||160,h=o.h||140,s='<svg viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+(o.alt||'')+'">';
-    if(o.floor!=null) s+='<line class="floor" x1="4" y1="'+o.floor+'" x2="'+(w-4)+'" y2="'+o.floor+'"/>';
-    s+=(o.props||'');
-    (o.ghost||[]).forEach(g=>s+=pl(g,'ghost'));
-    (o.ghostRaw||[]).forEach(g=>s+=g);
-    (o.segs||[]).forEach(g=>s+=pl(g,'body-line'));
-    (o.raw||[]).forEach(g=>s+=g);
-    if(o.head) s+='<circle class="head" cx="'+o.head[0]+'" cy="'+o.head[1]+'" r="'+(o.r||7)+'"/>';
-    (o.labels||[]).forEach(l=>s+='<text class="lbl" x="'+l[0]+'" y="'+l[1]+'" text-anchor="'+(l[3]||'start')+'">'+l[2]+'</text>');
-    return s+'</svg>'+(o.cap?'<figcaption>'+o.cap+'</figcaption>':'');
-  }
-  var REARFLY={alt:'俯身哑铃后束飞鸟',w:240,h:140,cap:'左：侧视，髋折叠、背平、哑铃垂在小腿前；右：从上往下看，手臂向左右打开成 T',
-      props:'<line class="floor" x1="4" y1="130" x2="112" y2="130"/><line class="prop" x1="120" y1="8" x2="120" y2="134" stroke-dasharray="2 4"/>',
-      head:[104,46],
-      segs:[[[92,50],[44,72]],[[44,72],[50,100],[52,130]],[[44,72],[42,100],[44,130]],[[92,50],[90,78],[88,104]],
-            [[180,30],[180,74]],[[180,74],[174,98]],[[180,74],[186,98]],[[180,34],[142,30]],[[180,34],[218,30]]],
-      raw:['<circle class="head" cx="180" cy="20" r="7"/><rect class="db" x="82" y="104" width="12" height="12" rx="2"/><rect class="db" x="134" y="24" width="10" height="12" rx="2"/><rect class="db" x="216" y="24" width="10" height="12" rx="2"/>',arrow(166,54,148,38),arrow(194,54,212,38)],
-      labels:[[40,56,'背平','middle'],[58,139,'起始：垂在小腿前','middle'],[180,112,'从上往下看','middle'],[180,126,'向两侧抬到肩高','middle']]};
-  var P2={
-    'fig-hipcar':{alt:'髋关节绕环',h:150,floor:140,cap:'正视 · 扶墙，膝盖画大圈',
-      props:'<line class="prop" x1="20" y1="20" x2="20" y2="140"/><circle class="cue" cx="108" cy="74" r="18"/>',
-      head:[80,24],
-      segs:[[[80,38],[80,86]],[[64,40],[40,46],[20,50]],[[96,40],[100,66],[102,90]],[[80,86],[78,112],[78,140]],[[80,86],[108,74],[104,100]]],
-      raw:[arrow(126,66,124,82)],
-      labels:[[108,112,'骨盆不动','middle']]},
-    'fig-wgs':{alt:'世界最伟大拉伸',floor:130,cap:'侧视 · 以右脚在前为例：左手撑地，右手转向天花板',
-      head:[104,48],
-      segs:[[[96,58],[80,96]],[[80,96],[112,96],[114,130]],[[80,96],[50,120],[14,130]],[[96,58],[96,96],[94,130]],[[96,58],[104,34],[110,8]]],
-      raw:[arrow(118,30,124,14)],
-      labels:[[6,30,'右手向上转，眼跟着手'],[88,124,'左手撑在右脚内侧','end']]},
-    'fig-cheststretch':{alt:'墙角胸部拉伸',floor:134,cap:'侧视 · 小臂贴墙，肘与肩同高，身体转开',
-      props:'<line class="prop" x1="140" y1="10" x2="140" y2="134"/><line class="cue" x1="60" y1="46" x2="140" y2="46"/>',
-      head:[84,28],
-      segs:[[[90,44],[88,92]],[[90,44],[140,46],[140,20]],[[90,44],[80,70],[72,90]],[[88,92],[80,112],[76,134]],[[88,92],[96,112],[100,134]]],
-      raw:[arrow(70,60,50,66)],
-      labels:[[60,42,'肘与肩同高','middle']]},
-    'fig-chintuck':{alt:'下巴后缩',h:110,cap:'侧视 · 水平后推，不低头不仰头',
-      props:'<line class="prop" x1="52" y1="78" x2="112" y2="78"/><line class="cue" x1="20" y1="42" x2="140" y2="42"/>',
-      head:[84,42],r:12,
-      segs:[[[84,54],[82,78]]],
-      ghostRaw:['<circle class="ghost" cx="106" cy="42" r="12"/>'],
-      raw:[arrow(128,26,100,26)],
-      labels:[[84,100,'水平后推','middle']]},
-    'fig-sideplank':{alt:'侧平板',cap:'正视 · 肘在肩正下方，小臂朝前对着镜头，头髋脚一条线',
-      props:'<rect class="pad" x="8" y="118" width="144" height="16" rx="2" opacity=".6"/><line class="cue" x1="16" y1="62" x2="146" y2="122"/>',
-      head:[24,66],
-      segs:[[[36,74],[90,96]],[[36,74],[36,120]],[[36,120],[44,131]],[[90,96],[140,118]],[[36,74],[66,82],[84,94]]],
-      raw:[arrow(90,118,90,104)],
-      labels:[[110,80,'髋顶起','middle'],[50,138,'小臂朝前（对着镜头）']]},
-    'fig-carry':{alt:'单手哑铃农夫行走',h:150,floor:140,cap:'正视 · 一手提哑铃，身体不歪',
-      props:'<line class="cue" x1="80" y1="8" x2="80" y2="140"/>',
-      head:[80,24],
-      segs:[[[80,38],[80,86]],[[64,40],[60,66],[58,92]],[[96,40],[100,66],[102,94]],[[80,86],[66,112],[62,140]],[[80,86],[94,112],[98,140]]],
-      raw:['<rect class="db" x="96" y="94" width="12" height="12" rx="2"/>'],
-      labels:[[36,60,'肩不耸','middle'],[124,60,'不往这边歪','middle']]},
-    'fig-revcrunch':{alt:'反向卷腹',floor:118,cap:'侧视 · 骨盆卷离地面，不是甩腿',
-      head:[18,108],
-      segs:[[[30,108],[82,100]],[[82,100],[88,70],[108,76]],[[30,108],[50,114],[70,118]]],
-      ghost:[[[82,108],[94,80],[114,86]]],
-      raw:[arrow(82,118,82,104)],
-      labels:[[96,52,'膝盖往胸口','middle']]},
-    'fig-scappush':{alt:'肩胛俯卧撑',floor:118,cap:'侧视 · 手臂伸直，只动肩胛骨',
-      head:[22,54],
-      segs:[[[34,60],[92,76]],[[34,60],[34,118]],[[92,76],[118,96],[144,118]]],
-      ghost:[[[34,68],[92,80]]],
-      raw:[arrow(48,46,48,34),arrow(48,46,48,58)],
-      labels:[[80,40,'胸沉下去再推开','middle']]},
-    'fig-pushup':{alt:'俯卧撑',floor:118,cap:'侧视 · 肘夹 45°，胸离地一拳',
-      head:[22,80],
-      segs:[[[34,86],[90,92]],[[34,86],[52,112],[34,118]],[[90,92],[116,104],[142,118]]],
-      ghost:[[[34,58],[34,118]],[[34,58],[90,74]]],
-      props:'<line class="cue" x1="12" y1="104" x2="100" y2="104"/>',
-      labels:[[80,122,'胸离地一拳','middle']]},
-    'fig-ytw':{alt:'俯卧 Y-T-W',w:220,h:200,cap:'上：侧视，趴在垫上把手臂抬离地约 10 cm；下：从上往下看，手臂摆成 Y、T、W 三个字母',
-      raw:[(function(){var out='';
-        out+='<line class="floor" x1="20" y1="52" x2="200" y2="52"/>';
-        out+='<circle class="head" cx="60" cy="42" r="6"/>'+pl([[68,47],[120,48]],'body-line')+pl([[120,48],[160,50]],'body-line')+pl([[68,44],[40,22]],'body-line');
-        out+='<line class="cue" x1="38" y1="24" x2="38" y2="52"/>'+arrow(52,44,46,30);
-        out+='<text class="lbl" x="130" y="30" text-anchor="middle">侧视：手臂抬离地约 10 cm，停 2 秒</text>';
-        out+='<line class="prop" x1="12" y1="66" x2="208" y2="66" stroke-dasharray="2 4"/>';
-        [[40,'Y'],[110,'T'],[180,'W']].forEach(function(f){var x=f[0],k=f[1],y0=78;
-        out+='<circle class="head" cx="'+x+'" cy="'+(y0+10)+'" r="7"/>'+pl([[x,y0+18],[x,y0+68]],'body-line')+pl([[x,y0+68],[x-6,y0+102]],'body-line')+pl([[x,y0+68],[x+6,y0+102]],'body-line');
-        if(k==='Y'){out+=pl([[x,y0+22],[x-14,y0+6],[x-24,y0-4]],'body-line')+pl([[x,y0+22],[x+14,y0+6],[x+24,y0-4]],'body-line');}
-        if(k==='T'){out+=pl([[x,y0+22],[x-30,y0+22]],'body-line')+pl([[x,y0+22],[x+30,y0+22]],'body-line');}
-        if(k==='W'){out+=pl([[x,y0+22],[x-18,y0+38],[x-26,y0+18]],'body-line')+pl([[x,y0+22],[x+18,y0+38],[x+26,y0+18]],'body-line');}
-        out+='<text class="lbl" x="'+x+'" y="'+(y0+90)+'" text-anchor="middle" font-size="14">'+k+'</text>';});
-        out+='<text class="lbl" x="110" y="196" text-anchor="middle">从上往下看 · 拇指朝上</text>';return out;})()]},
-    'fig-hammer':{alt:'哑铃锤式弯举',floor:134,cap:'侧视 · 哑铃竖着，肘贴体侧不前移',
-      props:'<line class="cue" x1="84" y1="30" x2="84" y2="100"/>',
-      head:[80,24],
-      segs:[[[80,38],[80,88]],[[80,38],[84,66],[108,52]],[[80,88],[74,112],[72,134]],[[80,88],[88,112],[90,134]]],
-      ghost:[[[84,66],[86,94]]],
-      raw:['<rect class="db" x="104" y="42" width="8" height="18" rx="2"/>',arrow(100,90,112,68)],
-      labels:[[40,60,'肘不前移','middle']]},
-    'fig-clam':{alt:'侧卧蚌式',floor:126,cap:'正视 · 脚跟并拢，上面的膝盖打开',
-      head:[18,100],
-      segs:[[[30,102],[86,104]],[[86,104],[118,112],[106,124]],[[86,104],[116,80],[106,124]],[[30,102],[56,108],[84,104]]],
-      raw:[arrow(118,98,120,84)],
-      labels:[[60,124,'脚跟不分开','middle']]},
-    'fig-calf':{alt:'提踵',h:150,floor:140,cap:'侧视 · 前脚掌踩台阶边，脚跟沉到底再提起',
-      props:'<rect class="pad" x="74" y="118" width="70" height="22"/><line class="prop" x1="20" y1="20" x2="20" y2="140"/>',
-      head:[70,20],
-      segs:[[[70,34],[70,86]],[[70,86],[70,116],[82,118]],[[70,116],[58,126]],[[70,34],[46,46],[20,50]]],
-      ghost:[[[70,114],[58,112]]],
-      raw:[arrow(48,128,48,110)],
-      labels:[[110,110,'台阶','middle']]}
-  };
-  var P={
-    'fig-foamroll':{alt:'泡沫轴胸椎伸展',floor:120,cap:'侧视 · 轴在肩胛下缘，臀不离地',
-      props:'<circle class="pad" cx="70" cy="112" r="8"/>',
-      head:[40,84],
-      segs:[[[110,116],[52,96]],[[110,116],[122,94],[134,118]],[[52,96],[58,80],[46,84]]],
-      raw:[arrow(40,70,30,60)],
-      labels:[[96,80,'上背后仰','middle']]},
-    'fig-catcow':{alt:'猫牛式',floor:118,cap:'侧视 · 实线=猫，虚线=牛',
-      head:[36,66],
-      raw:['<path class="body-line" d="M50,62 Q80,34 110,58"/>'],
-      ghostRaw:['<path class="ghost" d="M50,62 Q80,82 110,58"/>'],
-      segs:[[[50,62],[50,90],[50,118]],[[110,58],[110,118],[140,118]]],
-      labels:[[80,30,'拱背','middle']]},
-    'fig-9090':{alt:'90/90 髋转换',floor:100,cap:'正视 · 前腿小腿横在身前，后腿小腿朝后',
-      head:[80,30],
-      segs:[[[80,44],[80,82]],[[80,82],[120,90],[64,98]],[[80,82],[42,86],[44,66]]],
-      raw:[arrow(104,56,140,56)],
-      labels:[[122,74,'前腿','middle'],[36,60,'后腿','middle'],[122,50,'两膝倒向另一边','middle']]},
-    'fig-hipflexor':{alt:'跪姿髋屈肌拉伸',floor:118,cap:'侧视 · 臀收紧再前移',
-      head:[72,18],
-      segs:[[[72,30],[70,70]],[[70,70],[100,70],[100,118]],[[70,70],[50,118],[14,118]],[[72,30],[80,54],[94,66]]],
-      raw:[arrow(52,86,66,86)],
-      labels:[[40,100,'臀收紧','middle']]},
-    'fig-rearfly':REARFLY,
-    'fig-rearfly2':REARFLY,
-    'fig-extrot':{alt:'俯身 90° 肩外旋',floor:130,cap:'侧视 · 俯身，大臂抬到与肩同高，肘不动，只把小臂转起来',
-      head:[104,46],
-      segs:[[[92,50],[44,72]],[[44,72],[50,100],[52,130]],[[44,72],[42,100],[44,130]],[[92,50],[98,62]],[[98,62],[124,60]]],
-      ghost:[[[98,62],[100,90]]],
-      raw:['<rect class="db" x="122" y="54" width="8" height="12" rx="2"/><rect class="db" x="96" y="88" width="8" height="12" rx="2" opacity=".35"/>',arcArrow(98,62,22,Math.PI*0.5,Math.PI*0.08)],
-      labels:[[150,24,'肘与肩同高','end'],[40,56,'背平','middle'],[80,139,'虚线：起始小臂垂下','middle']]},
-    'fig-deadbug':{alt:'死虫',floor:118,cap:'侧视 · 对侧手脚伸远',
-      head:[18,108],
-      segs:[[[30,108],[82,108]],[[30,108],[30,78],[30,50]],[[30,108],[16,84],[6,62]],[[82,108],[112,100],[140,96]],[[82,108],[96,78],[118,80]]],
-      raw:[arrow(56,100,56,114)],
-      labels:[[56,128,'腰压地','middle']]},
-    'fig-plank':{alt:'平板支撑',floor:118,cap:'侧视 · 头到脚一条线',
-      head:[20,66],
-      segs:[[[32,70],[88,88]],[[32,70],[32,118],[8,118]],[[88,88],[114,103],[140,118]]],
-      props:'<line class="cue" x1="12" y1="62" x2="146" y2="120"/>',
-      labels:[[96,70,'臀夹紧','middle']]},
-    'fig-birddog':{alt:'鸟狗式',w:200,floor:118,cap:'侧视 · 与背同高即可',
-      head:[46,54],
-      segs:[[[60,62],[118,62]],[[60,62],[60,90],[60,118]],[[60,62],[36,58],[10,54]],[[118,62],[118,118],[150,118]],[[118,62],[150,60],[185,56]]],
-      props:'<line class="cue" x1="8" y1="54" x2="190" y2="54"/>'},
-    'fig-kneeraise':{alt:'悬垂举腿',cap:'侧视 · 吊在引体把手上',
-      props:'<line class="prop" x1="40" y1="12" x2="120" y2="12"/>',
-      head:[86,30],
-      segs:[[[80,12],[80,42]],[[80,42],[80,88]],[[80,88],[106,82],[106,108]]],
-      raw:[arrow(118,100,118,78)],
-      labels:[[80,128,'骨盆上卷','middle']]},
-    'fig-dip':{alt:'辅助双杠臂屈伸',h:164,cap:'正视 · 最低点：两手握住身体两侧的把手，肘弯 90°，膝盖跪在踏板上',
-      props:'<line class="prop" x1="34" y1="12" x2="34" y2="152"/><line class="prop" x1="126" y1="12" x2="126" y2="152"/><line class="prop" x1="34" y1="80" x2="50" y2="80"/><line class="prop" x1="126" y1="80" x2="110" y2="80"/><rect class="pad" x="54" y="124" width="52" height="8"/><line class="cue" x1="40" y1="56" x2="120" y2="56"/><path class="cue" d="M100,60 A12,12 0 0 0 112,72"/>',
-      head:[80,40],
-      segs:[[[80,54],[80,104]],[[66,56],[48,60],[48,80]],[[94,56],[112,60],[112,80]],[[80,104],[72,124],[70,146]],[[80,104],[88,124],[90,146]]],
-      labels:[[8,52,'肩别低于这条线'],[96,86,'90°','middle'],[80,160,'膝盖跪在踏板上','middle'],[40,92,'把手','end']]},
-    'fig-press':{alt:'坐姿推肩',cap:'侧视 · 下放到耳朵高度',
-      props:'<line class="prop" x1="88" y1="40" x2="92" y2="100"/><rect class="pad" x="56" y="98" width="38" height="7"/><line class="cue" x1="20" y1="36" x2="80" y2="36"/>',
-      head:[80,36],
-      segs:[[[80,50],[80,96]],[[80,50],[62,52],[62,32]],[[80,96],[50,98],[50,130]]],
-      ghost:[[[80,50],[72,30],[70,8]]],
-      raw:[arrow(50,30,58,14)],
-      labels:[[20,32,'耳朵高度']]},
-    'fig-latraise':{alt:'哑铃侧平举',floor:134,cap:'正视 · 举到肩高，小指略高',
-      head:[80,24],
-      segs:[[[80,38],[80,88]],[[64,40],[36,34],[10,30]],[[96,40],[124,34],[150,30]],[[80,88],[72,112],[70,134]],[[80,88],[88,112],[90,134]]],
-      raw:['<rect class="db" x="4" y="24" width="12" height="12" rx="2"/><rect class="db" x="144" y="24" width="12" height="12" rx="2"/>'],
-      props:'<line class="cue" x1="4" y1="40" x2="156" y2="40"/>',
-      labels:[[80,110,'不耸肩','middle']]},
-    'fig-wallangel':{alt:'靠墙天使',h:150,cap:'正视 · 背贴墙，W 滑到 Y',
-      props:'<rect class="pad" x="10" y="2" width="140" height="146" rx="2" opacity=".35"/>',
-      head:[80,34],
-      segs:[[[80,48],[80,92]],[[64,50],[46,66],[38,42]],[[96,50],[114,66],[122,42]],[[80,92],[70,118],[68,144]],[[80,92],[90,118],[92,144]]],
-      ghost:[[[64,50],[52,26],[42,6]],[[96,50],[108,26],[118,6]]],
-      raw:[arrow(32,36,36,14),arrow(128,36,124,14)],
-      labels:[[80,110,'腰贴墙','middle']]},
-    'fig-chin':{alt:'辅助引体向上',cap:'正视 · 先沉肩胛再拉',
-      props:'<line class="prop" x1="30" y1="22" x2="130" y2="22"/><rect class="pad" x="58" y="118" width="44" height="7"/>',
-      head:[80,40],
-      segs:[[[80,54],[80,98]],[[64,56],[50,40],[52,22]],[[96,56],[110,40],[108,22]],[[80,98],[74,118],[72,138]],[[80,98],[86,118],[88,138]]],
-      raw:[arrow(40,54,40,68),arrow(120,54,120,68)],
-      labels:[[80,132,'肩胛下沉','middle']]},
-    'fig-row':{alt:'低拉划船',cap:'侧视 · 上身不动，肘到髋旁',
-      props:'<line class="prop" x1="22" y1="88" x2="30" y2="110"/><rect class="pad" x="76" y="96" width="36" height="7"/><line class="prop" x1="12" y1="98" x2="70" y2="77"/>',
-      head:[92,32],
-      segs:[[[92,46],[90,92]],[[90,92],[60,74],[30,96]],[[92,46],[100,80],[72,76]]],
-      raw:[arrow(66,62,96,70)],
-      labels:[[104,96,'挺胸']]},
-    'fig-goblet':{alt:'哑铃高脚杯深蹲',floor:124,cap:'侧视 · 哑铃抵胸，脚跟踩实',
-      head:[78,20],
-      segs:[[[78,34],[62,80]],[[62,80],[100,86],[96,124]],[[78,34],[92,54],[84,48]]],
-      raw:['<rect class="db" x="78" y="42" width="12" height="12" rx="2"/>'],
-      props:'<line class="cue" x1="40" y1="84" x2="110" y2="84"/>',
-      labels:[[110,116,'脚跟','middle'],[30,80,'大腿平行']]},
-    'fig-rdl':{alt:'哑铃罗马尼亚硬拉',floor:130,cap:'侧视 · 臀向后推，背平直',
-      head:[122,40],
-      segs:[[[110,46],[56,72]],[[56,72],[60,100],[62,130]],[[110,46],[104,76],[98,104]]],
-      raw:['<rect class="db" x="92" y="104" width="12" height="12" rx="2"/>',arrow(50,72,28,72)],
-      labels:[[80,32,'背平','middle']]},
-    'fig-legext':{alt:'腿伸展机',cap:'侧视 · 膝对转轴，顶端停 1 秒',
-      props:'<line class="prop" x1="80" y1="30" x2="82" y2="90"/><rect class="pad" x="50" y="86" width="50" height="7"/><circle class="pad" cx="124" cy="70" r="5"/><circle class="prop" cx="100" cy="84" r="3"/>',
-      head:[72,22],
-      segs:[[[72,36],[70,80]],[[70,80],[100,84],[130,64]]],
-      ghost:[[[100,84],[104,120]]],
-      raw:[arrow(116,108,126,84)],
-      labels:[[40,120,'膝对转轴']]},
-    'fig-split':{alt:'分腿蹲',floor:118,cap:'侧视 · 后膝垂直落',
-      head:[80,14],
-      segs:[[[80,28],[80,72]],[[80,72],[108,76],[108,118]],[[80,72],[60,108],[36,118]],[[80,28],[96,50],[84,66]]],
-      props:'<line class="cue" x1="108" y1="60" x2="108" y2="118"/>',
-      raw:[arrow(44,86,54,100)],
-      labels:[[112,60,'膝对脚尖']]},
-    'fig-bridge':{alt:'臀桥',floor:118,cap:'侧视 · 肩膝一条线',
-      head:[18,110],
-      segs:[[[30,108],[84,84]],[[84,84],[110,80],[112,118]],[[30,108],[50,114],[70,118]]],
-      props:'<line class="cue" x1="26" y1="110" x2="112" y2="78"/>',
-      raw:[arrow(84,110,84,94)],
-      labels:[[96,128,'臀发力','middle']]}
-  };
-
-  Object.assign(P,P2);
-  Object.keys(P).forEach(id=>{var el=document.getElementById(id);if(el)el.innerHTML=fig(P[id]);});
-
-  /* ---------- 周表 + 当天流程 ---------- */
-  var PREP=[
-    ['热身 8\'','跑步机坡度 6 / 速度 3 走 3 分钟 → 泡沫轴胸椎 60 秒 → 猫牛 8 → 髋绕环 5/侧 → 世界最伟大拉伸 4/侧 → 肩胛绕环 + 徒手深蹲各 10','#warm'],
-    ['胯·圆肩 8\'','90/90 × 8 → 髋屈肌拉伸 30 秒/侧 → 俯身哑铃后束飞鸟 2×15（2–4 kg）→ 俯身 90° 肩外旋 2×12/侧 → 胸拉伸 + 下巴后缩','#hip']
-  ];
-  var CORE_A=['核心 A 6\'','死虫 3×8/侧 → 平板 3×30–45 秒 → 鸟狗 2×8/侧','#core'];
-  var CORE_B=['核心 B 6\'','侧平板 2×30 秒/侧 → 单手农夫行走 2×30 秒/侧 → 反向卷腹 2×12（邪修：悬垂举腿 3×8–12）','#core'];
-  var S={
-    push:{name:'推日',cls:'push',short:'推',sub:'胸 / 肩 / 三头',core:CORE_A,anchor:'#day-push',
-      items:['辅助双杠臂屈伸 3×8–12','坐姿推肩 3×10–12','俯身哑铃后束飞鸟 3×12–15（4–8 kg）','肩胛俯卧撑 2×12 + 靠墙天使 10','（有时间）俯卧撑 2 组'],
-      cardio:'爬坡 10 分钟，坡度 8–10，速度按当前阶段',grid:'双杠 · 推肩<br>爬坡 10\''},
-    pull:{name:'拉日',cls:'pull',short:'拉',sub:'背 / 二头 / 后肩',core:CORE_B,anchor:'#day-pull',
-      items:['辅助引体向上 3×6–10','低拉划船 3×10–15','俯卧 Y-T-W 各 10 × 2','哑铃锤式弯举 2×10–12'],
-      cardio:'爬坡 10 分钟',grid:'引体 · 划船<br>爬坡 10\''},
-    legs:{name:'腿胯日',cls:'legs',short:'腿胯',sub:'臀 / 腿 / 髋 · 力量 22 分钟',core:CORE_A,anchor:'#day-legs',
-      items:['哑铃高脚杯深蹲 3×10–12','哑铃罗马尼亚硬拉 3×10–12','腿伸展机 2×12–15','分腿蹲 2×10/侧','臀桥 2×15','（有时间）蚌式 2×15/侧、提踵 2×20'],
-      cardio:'爬坡 15 分钟（第二天腿酸可换椭圆机）',grid:'哑铃 · 腿伸展<br>爬坡 15\''},
-    upper:{name:'上肢混合（5 天版）',cls:'upper',short:'上肢',sub:'拉为主，带两组推',core:CORE_B,anchor:'#day-pull',
-      items:['辅助引体向上 3×6–10','低拉划船 3×10–15','坐姿推肩 2×10–12','辅助双杠 2×8–12','俯卧 Y-T-W 各 10 × 1'],
-      cardio:'爬坡 10 分钟',grid:'引体 · 划船<br>推肩 · 双杠'},
-    rest:{name:'休息日',cls:'rest',short:'休',sub:'不进健身房',items:[],grid:'散步 · 睡够'}
-  };
-  var DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
-  var WEEK={6:['rest','push','pull','legs','push','pull','legs'],5:['rest','push','pull','legs','rest','upper','legs']};
-  var NOTE={6:'6 天版：推拉腿各两次，周日休息。',5:'5 天版：周四休，周五上肢混合；两个腿日之间隔三天。'};
-  var mode=6, sel=new Date().getDay();
-  try{var m=localStorage.getItem('ppl-mode');if(m==='5'||m==='6')mode=+m;}catch(e){}
-  var grid=document.getElementById('week'),plan=document.getElementById('plan'),note=document.getElementById('weekNote');
-  function renderWeek(){
-    var order=[1,2,3,4,5,6,0],today=new Date().getDay(),html='';
-    order.forEach(function(d){
-      var k=WEEK[mode][d],s=S[k];
-      html+='<div class="'+s.cls+(d===today?' today':'')+(d===sel?' sel':'')+'" data-d="'+d+'" role="button" tabindex="0" aria-pressed="'+(d===sel)+'">'+
-        '<div class="d">'+DAYS[d]+'</div><div class="t">'+s.short+'</div><div class="s">'+s.grid+'</div></div>';
+  var P=window.PLAN,EX=P.EX,out='';
+  ['push','pull','legs','upper'].forEach(function(k){
+    var s=P.S[k],steps=P.buildSteps(k),cur='';
+    out+='<div class="dayhead" id="day-'+k+'"><h2>'+s.name+'</h2><div class="sub">'+s.sub+' · 共 '+steps.length+' 步，按区域顺序</div></div>';
+    steps.forEach(function(st,i){
+      var e=EX[st.id],rx=st.rx||e.rx;
+      if(st.blk!==cur){cur=st.blk;out+='<div class="blockhead">'+cur+'</div>';}
+      out+='<article class="ex"><div class="fig">'+P.fig(P.FIGS[e.f])+'</div><div class="info"><h2>'+(i+1)+'. '+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'')+'<ul>'+e.c.map(function(c){return '<li>'+c+'</li>';}).join('')+'</ul>'+((e.d||e.u)?('<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>'):'')+'</div></article>';
     });
-    grid.innerHTML=html;
-    note.textContent=NOTE[mode];
-    document.getElementById('btn6').setAttribute('aria-pressed',mode===6);
-    document.getElementById('btn5').setAttribute('aria-pressed',mode===5);
-    renderPlan();
-  }
-  function renderPlan(){
-    var k=WEEK[mode][sel],s=S[k],cn=['周日','周一','周二','周三','周四','周五','周六'][sel];
-    var h='<h3>'+cn+' · '+s.name+'</h3><div class="sub">'+s.sub+'</div>';
-    if(k==='rest'){
-      h+='<p>散步 30–40 分钟或完全休息。想动就只做准备模块里的胯和圆肩那 8 分钟。</p>';
-    }else{
-      var n=0;h+='<ol>';
-      h+='<span class="blk">准备模块 22\'</span>';
-      PREP.forEach(function(p){h+='<li><b>'+(++n)+'</b><strong>'+p[0]+'</strong> '+p[1]+'<a href="'+p[2]+'">说明</a></li>';});
-      h+='<li><b>'+(++n)+'</b><strong>'+s.core[0]+'</strong> '+s.core[1]+'<a href="'+s.core[2]+'">说明</a></li>';
-      h+='<span class="blk">力量 '+(k==='legs'?'22':'26')+'\'<a href="'+s.anchor+'">看动作要点和退阶 / 邪修</a></span>';
-      s.items.forEach(function(it){h+='<li><b>'+(++n)+'</b>'+it+'</li>';});
-      h+='<span class="blk">有氧</span><li><b>'+(++n)+'</b>'+s.cardio+'<a href="#cardio">说明</a></li>';
-      h+='<li><b>'+(++n)+'</b>放松 2 分钟：胸拉伸、髋屈肌拉伸各 20 秒/侧</li></ol>';
-    }
-    plan.innerHTML=h;
-  }
-  grid.addEventListener('click',function(e){var c=e.target.closest('[data-d]');if(!c)return;sel=+c.dataset.d;renderWeek();});
-  grid.addEventListener('keydown',function(e){if(e.key!=='Enter'&&e.key!==' ')return;var c=e.target.closest('[data-d]');if(!c)return;e.preventDefault();sel=+c.dataset.d;renderWeek();});
-  document.getElementById('btn6').addEventListener('click',function(){mode=6;try{localStorage.setItem('ppl-mode','6');}catch(e){}renderWeek();});
-  document.getElementById('btn5').addEventListener('click',function(){mode=5;try{localStorage.setItem('ppl-mode','5');}catch(e){}renderWeek();});
-  renderWeek();
+  });
+  document.getElementById('days').innerHTML=out;
 })();
 </script>
+</body>
+</html>
