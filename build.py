@@ -28,6 +28,9 @@ body{display:block;overflow:auto;height:auto}
 @media (max-width:560px){.ex{grid-template-columns:1fr}.ex .fig{max-width:240px;margin:0 auto}}
 .doc{padding:0;overflow:visible}
 .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:1rem}
+.flowtbl{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:.8rem}
+.flowtbl th,.flowtbl td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.flowtbl th{font-size:.74rem;color:var(--muted);font-weight:500}
 .toc a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;text-decoration:none;color:var(--fg);background:var(--surface)}
 </style>"""
 
@@ -45,7 +48,7 @@ plan_full=f"""<!doctype html>
   <div class="eyebrow" style="font-family:var(--font-num);font-size:.72rem;letter-spacing:.14em;color:var(--accent);text-transform:uppercase">Morning · Push / Pull / Legs+Hip · 60 min</div>
   <h1>晨练推拉腿计划 · 长文版</h1>
   <p class="lead">和手机卡片版（<a href="index.html">index.html</a>）是同一份数据，这里按训练日把所有动作顺序列出来，适合在电脑上通读。</p>
-  <div class="toc"><a href="#doc">说明</a><a href="#day-push">推日</a><a href="#day-pull">拉日</a><a href="#day-legs">腿胯日</a><a href="#day-upper">上肢混合（5 天版）</a></div>
+  <div class="toc"><a href="#doc">说明</a><a href="#day-common">固定部分</a><a href="#day-push">推日</a><a href="#day-pull">拉日</a><a href="#day-legs">腿胯日</a><a href="#day-upper">上肢混合（5 天版）</a></div>
   <div class="doc" id="doc">{doc}</div>
   <div id="days"></div>
 </div>
@@ -53,14 +56,22 @@ plan_full=f"""<!doctype html>
 <script>
 (function(){{
   var P=window.PLAN,EX=P.EX,out='';
+  function card(st,i){{
+    var e=EX[st.id],rx=st.rx||e.rx;
+    var ph=e.p?'<div class="photos"><img src="img/'+e.p+'-0.jpg" alt="起始" loading="lazy"><img src="img/'+e.p+'-1.jpg" alt="结束" loading="lazy"></div><div class="pcap">照片：起始 → 结束'+(e.pn?' · '+e.pn:'')+'</div>':'';
+    return '<article class="ex"><div class="fig">'+ph+P.fig(P.FIGS[e.f])+'</div><div class="info"><h2>'+(i+1)+'. '+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'')+'<ul>'+e.c.map(function(c){{return '<li>'+c+'</li>';}}).join('')+'</ul>'+((e.d||e.u)?('<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>'):'')+'</div></article>';
+  }}
+  var common=P.buildCommon(),cur='';
+  out+='<div class="dayhead" id="day-common"><h2>固定部分（每天都做）</h2><div class="sub">跑步机起坡 → 瑜伽室热身、胯、圆肩、核心 → （当天的器械区 / 哑铃区）→ 跑步机有氧 → 放松。圆肩和核心各有两个版本，标题里写了哪天做哪个。</div></div>';
+  common.forEach(function(st,i){{if(st.blk!==cur){{cur=st.blk;out+='<div class="blockhead">'+cur+'</div>';}}out+=card(st,i);}});
   ['push','pull','legs','upper'].forEach(function(k){{
-    var s=P.S[k],steps=P.buildSteps(k),cur='';
-    out+='<div class="dayhead" id="day-'+k+'"><h2>'+s.name+'</h2><div class="sub">'+s.sub+' · 共 '+steps.length+' 步，按区域顺序</div></div>';
+    var s=P.S[k],steps=P.buildSteps(k);cur='';
+    out+='<div class="dayhead" id="day-'+k+'"><h2>'+s.name+'</h2><div class="sub">'+s.sub+' · 预计 '+s.total+' · 固定部分里：'+s.variant+'</div></div>';
+    out+='<table class="flowtbl"><tr><th>顺序</th><th>内容</th><th>时间</th></tr>'+s.flow.map(function(f){{return '<tr><td>'+f[0]+'</td><td>'+f[1]+'</td><td>'+f[2]+'</td></tr>';}}).join('')+'</table><p class="small">'+s.late+'</p>';
     steps.forEach(function(st,i){{
-      var e=EX[st.id],rx=st.rx||e.rx;
+      if(st.id==='_overview')return;
       if(st.blk!==cur){{cur=st.blk;out+='<div class="blockhead">'+cur+'</div>';}}
-      var ph=e.p?'<div class="photos"><img src="img/'+e.p+'-0.jpg" alt="起始" loading="lazy"><img src="img/'+e.p+'-1.jpg" alt="结束" loading="lazy"></div><div class="pcap">照片：起始 → 结束'+(e.pn?' · '+e.pn:'')+'</div>':'';
-      out+='<article class="ex"><div class="fig">'+ph+P.fig(P.FIGS[e.f])+'</div><div class="info"><h2>'+(i+1)+'. '+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'')+'<ul>'+e.c.map(function(c){{return '<li>'+c+'</li>';}}).join('')+'</ul>'+((e.d||e.u)?('<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>'):'')+'</div></article>';
+      out+=card(st,i);
     }});
   }});
   document.getElementById('days').innerHTML=out;
