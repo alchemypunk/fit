@@ -19,7 +19,8 @@ body{display:block;overflow:auto;height:auto}
 .blockhead{font-family:var(--font-num);font-size:.72rem;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin:1.6rem 0 .2rem}
 .ex{display:grid;grid-template-columns:170px 1fr;gap:16px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:14px;margin-top:12px}
 .ex .fig{background:var(--figbg);border-radius:8px;padding:10px;min-width:0}
-.ex .fig svg{width:100%;height:auto;display:block}
+.ex .fig svg{width:100%;height:auto;display:block;margin-top:8px}
+.ex .fig .pcap{font-size:.72rem;color:var(--muted);text-align:center;padding-top:4px}
 .ex .fig figcaption{font-size:.72rem;color:var(--muted);text-align:center;padding-top:4px}
 .ex .info{padding:0;min-width:0}
 .ex .info h2{font-size:1.05rem}
@@ -58,7 +59,8 @@ plan_full=f"""<!doctype html>
     steps.forEach(function(st,i){{
       var e=EX[st.id],rx=st.rx||e.rx;
       if(st.blk!==cur){{cur=st.blk;out+='<div class="blockhead">'+cur+'</div>';}}
-      out+='<article class="ex"><div class="fig">'+P.fig(P.FIGS[e.f])+'</div><div class="info"><h2>'+(i+1)+'. '+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'')+'<ul>'+e.c.map(function(c){{return '<li>'+c+'</li>';}}).join('')+'</ul>'+((e.d||e.u)?('<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>'):'')+'</div></article>';
+      var ph=e.p?'<div class="photos"><img src="img/'+e.p+'-0.jpg" alt="起始" loading="lazy"><img src="img/'+e.p+'-1.jpg" alt="结束" loading="lazy"></div><div class="pcap">照片：起始 → 结束'+(e.pn?' · '+e.pn:'')+'</div>':'';
+      out+='<article class="ex"><div class="fig">'+ph+P.fig(P.FIGS[e.f])+'</div><div class="info"><h2>'+(i+1)+'. '+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'')+'<ul>'+e.c.map(function(c){{return '<li>'+c+'</li>';}}).join('')+'</ul>'+((e.d||e.u)?('<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>'):'')+'</div></article>';
     }});
   }});
   document.getElementById('days').innerHTML=out;

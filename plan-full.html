@@ -128,6 +128,16 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
 @media (prefers-reduced-motion: no-preference){.deck{scroll-behavior:smooth}}
 .faq dt{font-weight:700;margin-top:.9rem}
 .faq dd{margin:.2rem 0 0;font-size:.93rem}
+/* 照片 + 示意图切换 */
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:360px;margin:0 auto}
+.photos img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:6px;background:#fff;display:block}
+.fig .pcap{font-size:.74rem;color:var(--muted);text-align:center;padding:4px 0 2px}
+.fig.has-photo .sketch{display:none}
+.fig.has-photo.show-sketch .sketch{display:block}
+.fig.has-photo.show-sketch .photos,.fig.has-photo.show-sketch .pcap{display:none}
+.fig.nophoto .photos,.fig.nophoto .pcap,.fig.nophoto .flip{display:none}
+.fig.nophoto .sketch{display:block}
+.flip{display:block;margin:6px auto 2px;font-size:.74rem;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:2px 12px;background:var(--surface);cursor:pointer}
 </style>
 <style>
 body{display:block;overflow:auto;height:auto}
@@ -140,7 +150,8 @@ body{display:block;overflow:auto;height:auto}
 .blockhead{font-family:var(--font-num);font-size:.72rem;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin:1.6rem 0 .2rem}
 .ex{display:grid;grid-template-columns:170px 1fr;gap:16px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:14px;margin-top:12px}
 .ex .fig{background:var(--figbg);border-radius:8px;padding:10px;min-width:0}
-.ex .fig svg{width:100%;height:auto;display:block}
+.ex .fig svg{width:100%;height:auto;display:block;margin-top:8px}
+.ex .fig .pcap{font-size:.72rem;color:var(--muted);text-align:center;padding-top:4px}
 .ex .fig figcaption{font-size:.72rem;color:var(--muted);text-align:center;padding-top:4px}
 .ex .info{padding:0;min-width:0}
 .ex .info h2{font-size:1.05rem}
@@ -228,7 +239,7 @@ body{display:block;overflow:auto;height:auto}
   </ul>
 
   <h2>动作要点参考</h2>
-  <p class="small">动作名称、要点和肌群对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>（873 个动作，含分解照片和步骤说明，Unlicense）。图示是按这些说明画的示意图，照片版可在 <a href="https://yuhonas.github.io/free-exercise-db/" target="_blank" rel="noopener">它的网页</a> 里按英文名搜索查看。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
+  <p class="small">动作名称、要点和肌群对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>（873 个动作，含分解照片和步骤说明，Unlicense）。卡片上的分解照片（起始 → 结束）来自该库，示意图是按它的说明画的，照片和示意图可以在卡片上切换。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
 </div>
   <div id="days"></div>
 </div>
@@ -242,7 +253,8 @@ body{display:block;overflow:auto;height:auto}
     steps.forEach(function(st,i){
       var e=EX[st.id],rx=st.rx||e.rx;
       if(st.blk!==cur){cur=st.blk;out+='<div class="blockhead">'+cur+'</div>';}
-      out+='<article class="ex"><div class="fig">'+P.fig(P.FIGS[e.f])+'</div><div class="info"><h2>'+(i+1)+'. '+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'')+'<ul>'+e.c.map(function(c){return '<li>'+c+'</li>';}).join('')+'</ul>'+((e.d||e.u)?('<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>'):'')+'</div></article>';
+      var ph=e.p?'<div class="photos"><img src="img/'+e.p+'-0.jpg" alt="起始" loading="lazy"><img src="img/'+e.p+'-1.jpg" alt="结束" loading="lazy"></div><div class="pcap">照片：起始 → 结束'+(e.pn?' · '+e.pn:'')+'</div>':'';
+      out+='<article class="ex"><div class="fig">'+ph+P.fig(P.FIGS[e.f])+'</div><div class="info"><h2>'+(i+1)+'. '+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'')+'<ul>'+e.c.map(function(c){return '<li>'+c+'</li>';}).join('')+'</ul>'+((e.d||e.u)?('<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>'):'')+'</div></article>';
     });
   });
   document.getElementById('days').innerHTML=out;

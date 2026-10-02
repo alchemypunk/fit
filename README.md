@@ -3,7 +3,11 @@
 手机端的训练卡片页面：选星期 → 左右滑动看每一步动作（上图下文），底部可切到"说明"看整体方案。
 
 - `index.html`：卡片式手机页面（GitHub Pages 直接打开的就是它）
-- `plan-full.html`：同一方案的长文版，适合在电脑上通读
+- `data.js`：动作、图示、训练日数据，两个页面共用
+- `plan-full.html`：同一方案的长文版，由 `build.py` 生成，适合在电脑上通读
+- `img/`：动作分解照片，来自公有领域的 Free Exercise DB（见 `img/SOURCE.md`）
+
+改完 `index.html` 或 `data.js` 后运行 `python3 build.py` 重新生成长文版。
 
 ## 发布到 GitHub Pages
 

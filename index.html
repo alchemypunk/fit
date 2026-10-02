@@ -130,6 +130,16 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
 @media (prefers-reduced-motion: no-preference){.deck{scroll-behavior:smooth}}
 .faq dt{font-weight:700;margin-top:.9rem}
 .faq dd{margin:.2rem 0 0;font-size:.93rem}
+/* 照片 + 示意图切换 */
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:360px;margin:0 auto}
+.photos img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:6px;background:#fff;display:block}
+.fig .pcap{font-size:.74rem;color:var(--muted);text-align:center;padding:4px 0 2px}
+.fig.has-photo .sketch{display:none}
+.fig.has-photo.show-sketch .sketch{display:block}
+.fig.has-photo.show-sketch .photos,.fig.has-photo.show-sketch .pcap{display:none}
+.fig.nophoto .photos,.fig.nophoto .pcap,.fig.nophoto .flip{display:none}
+.fig.nophoto .sketch{display:block}
+.flip{display:block;margin:6px auto 2px;font-size:.74rem;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:2px 12px;background:var(--surface);cursor:pointer}
 </style>
 </head>
 <body>
@@ -218,7 +228,7 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
   </ul>
 
   <h2>动作要点参考</h2>
-  <p class="small">动作名称、要点和肌群对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>（873 个动作，含分解照片和步骤说明，Unlicense）。图示是按这些说明画的示意图，照片版可在 <a href="https://yuhonas.github.io/free-exercise-db/" target="_blank" rel="noopener">它的网页</a> 里按英文名搜索查看。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
+  <p class="small">动作名称、要点和肌群对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>（873 个动作，含分解照片和步骤说明，Unlicense）。卡片上的分解照片（起始 → 结束）来自该库，示意图是按它的说明画的，照片和示意图可以在卡片上切换。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
 </main>
 
 <footer class="bottom">
@@ -242,10 +252,18 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
   var $=function(id){return document.getElementById(id);};
   var deck=$('deck'),daysEl=$('days'),blocksEl=$('blocks');
 
+  function figHTML(e){
+    var sk=P.fig(P.FIGS[e.f]);
+    if(!e.p) return '<div class="fig">'+sk+'</div>';
+    var b='img/'+e.p,oe=' onerror="this.closest(\'.fig\').classList.add(\'nophoto\')"';
+    return '<div class="fig has-photo"><div class="photos"><img src="'+b+'-0.jpg" alt="起始" loading="lazy"'+oe+'><img src="'+b+'-1.jpg" alt="结束" loading="lazy"'+oe+'></div>'+
+      '<figcaption class="pcap">照片：起始 → 结束'+(e.pn?' · '+e.pn:'')+'</figcaption>'+
+      '<div class="sketch">'+sk+'</div><button type="button" class="flip" data-flip>看示意图</button></div>';
+  }
   function cardHTML(st,i){
     var e=EX[st.id],rx=st.rx||e.rx;
     var h='<article class="card'+(st.id==='rest'?' restcard':'')+'" data-i="'+i+'">';
-    h+='<div class="fig">'+P.fig(P.FIGS[e.f])+'</div>';
+    h+=figHTML(e);
     h+='<div class="info"><div class="blk">'+st.blk+' · 第 '+(i+1)+' / '+steps.length+' 步</div><h2>'+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'');
     h+='<ul>'+e.c.map(function(c){return '<li>'+c+'</li>';}).join('')+'</ul>';
     if(e.d||e.u)h+='<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>';
@@ -283,6 +301,7 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
     markBlock();
   }
   var st;
+  deck.addEventListener('click',function(e){var b=e.target.closest('[data-flip]');if(!b)return;var f=b.closest('.fig');f.classList.toggle('show-sketch');b.textContent=f.classList.contains('show-sketch')?'看照片':'看示意图';});
   deck.addEventListener('scroll',function(){clearTimeout(st);st=setTimeout(function(){var i=Math.round(deck.scrollLeft/deck.clientWidth);if(i!==idx){idx=i;markBlock();}},80);});
   $('prev').addEventListener('click',function(){go(idx-1);});
   $('next').addEventListener('click',function(){go(idx+1);});
