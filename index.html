@@ -149,6 +149,26 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
 .flow strong{display:block}
 .flow span{color:var(--muted);font-size:.84rem;line-height:1.4}
 .gocommon{display:block;width:100%;margin-top:12px;padding:10px;border:1px solid var(--accent);color:var(--accent);border-radius:10px;font-weight:700;background:var(--surface)}
+/* 表格版：要领、细节折叠、总表 */
+.cue{margin:.6rem 0 0;font-size:.98rem;line-height:1.6}
+.cue b{display:inline-block;font-size:.68rem;letter-spacing:.12em;color:var(--accent);font-family:var(--font-num);margin-right:8px;vertical-align:1px}
+.only{display:inline-block;margin-top:6px;font-size:.74rem;padding:1px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:700}
+details.more{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
+details.more summary{font-size:.82rem;color:var(--muted);cursor:pointer;list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:" ▾"}
+details.more[open] summary::after{content:" ▴"}
+.sheet{min-width:660px;font-size:.84rem}
+.sheet .grp td{background:var(--ink);color:var(--ink-fg);font-weight:700;letter-spacing:.06em}
+.sheet tr.row{cursor:pointer}
+.sheet tr.row:hover td{background:var(--accent-soft)}
+.sheet td:nth-child(2){font-weight:700;white-space:nowrap}
+.sheet td:nth-child(1),.sheet td:nth-child(3),.sheet td:nth-child(4),.sheet td:nth-child(5),.sheet td:nth-child(7){white-space:nowrap}
+.nextbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.nextbtns button{flex:1 1 30%;padding:8px;border:1px solid var(--line);border-radius:10px;font-weight:700;background:var(--surface)}
+.lifts{list-style:none;padding:0;margin:.6rem 0 0}
+.lifts li{padding:6px 0;border-bottom:1px solid var(--line);font-size:.93rem}
+.lifts li span{color:var(--accent);font-family:var(--font-num);font-weight:700;margin-left:8px;font-size:.86rem}
 </style>
 </head>
 <body>
@@ -166,73 +186,85 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
   <div class="deck" id="deck"></div>
 </main>
 
+<main class="doc hidden" id="tableView">
+  <h2>训练总表</h2>
+  <p class="small">和你的表格一一对应：阶段、设备、动作、时间、组数、次数、要领、备注。前四个阶段每天都做，后三个按训练日轮换。点任意一行打开对应的卡片。</p>
+  <div class="tbl"><table class="sheet" id="sheet"></table></div>
+  <p class="small">表格之外保留了收尾：爬坡有氧（推拉日 8 分钟加 2 分钟慢走，臀腿日 4 加 2 分钟）和 2 分钟拉伸，在"固定"的最后两张卡里。</p>
+</main>
+
 <main class="doc hidden" id="docView">
   <h2>先说结论</h2>
   <div class="verdict">
-    <p><strong>用"推 / 拉 / 腿胯"三分化，6 天跑两轮，5 天周四休。</strong>上肢器械按推、拉分开；腿和胯用哑铃、腿伸展机加长一点的跑步机爬坡。</p>
-    <p><strong>每次按区域走一遍，不来回跑：</strong>跑步机 3 分钟起坡 → 瑜伽室（热身、胯、圆肩、核心，约 19 分钟）→ 器械区和哑铃区（力量约 20 分钟，腿日先哑铃后器械，其他日先器械后哑铃）→ 跑步机有氧 10 分钟加 2 分钟慢走 → 拉伸 2 分钟。</p>
-    <p>每天相同的部分（跑步机起坡、瑜伽室的热身、胯、圆肩、核心，以及有氧和放松）只列一次，在星期条最前面的"固定"里；圆肩和核心各有两个版本，卡片上标了哪天做哪个。每个训练日的第一张卡是当天的总览和时间预算，往右滑才是当天特有的动作。</p>
+    <p><strong>按你的表格执行：热身 → 胯 → 肩 → 核心 → 当天的三个力量动作。</strong>前四个阶段每天都做，力量按推日、拉日、臀腿日轮换，6 天跑两轮，5 天周四休。</p>
+    <p>表格里的内容本身约 48 到 53 分钟。剩下的时间留给收尾：爬坡有氧加拉伸。收尾不在你的表格里，是按之前的约定保留的，时长按当天剩余时间定。</p>
     <p>肚腩靠每周总消耗和饮食缺口，核心动作只负责让腰在深蹲、引体时稳住。</p>
   </div>
 
-  <h2>每次 60 分钟怎么分</h2>
-  <div class="timeline"><div class="tl-warm"><b>3'</b>跑步机</div><div class="tl-hip"><b>19'</b>瑜伽室</div><div class="tl-str"><b>20'</b>器械区 + 哑铃区</div><div class="tl-cardio"><b>12'</b>跑步机</div><div class="tl-cool"><b>2'</b></div></div>
+  <h2>时间预算</h2>
   <div class="tbl"><table>
-    <tr><th>训练日</th><th>固定部分</th><th>器械区</th><th>哑铃区</th><th>有氧 + 放松</th><th>合计</th></tr>
-    <tr><td>推</td><td>22′</td><td>13′（双杠 3、推肩 3）</td><td>7′（后束划船 3、肩外旋 2）</td><td>14′</td><td><strong>56′</strong></td></tr>
-    <tr><td>拉</td><td>22′</td><td>12′（引体 3、划船 3）</td><td>9′（单臂划船 2、后束划船 2、肩外旋 2）</td><td>14′</td><td><strong>57′</strong></td></tr>
-    <tr><td>腿胯</td><td>24′（含臀桥）</td><td>4′（腿伸展 2）</td><td>16′（高脚杯 3、硬拉 3、分腿蹲 2）</td><td>14′</td><td><strong>58′</strong></td></tr>
-    <tr><td>上肢混合</td><td>22′</td><td>18′（引体 3、划船 3、推肩 2、双杠 2）</td><td>3′（后束划船 2）</td><td>14′</td><td><strong>57′</strong></td></tr>
+    <tr><th>训练日</th><th>热身</th><th>胯</th><th>肩</th><th>核心</th><th>力量</th><th>收尾</th><th>合计</th></tr>
+    <tr><td>推日</td><td>10′</td><td>3′</td><td>4′</td><td>13′</td><td>17′</td><td>12′</td><td><strong>59′</strong></td></tr>
+    <tr><td>拉日</td><td>10′</td><td>3′</td><td>4′</td><td>13′</td><td>18′</td><td>12′</td><td><strong>60′</strong></td></tr>
+    <tr><td>臀腿日</td><td>10′</td><td>3′</td><td>8′</td><td>13′</td><td>18′</td><td>8′</td><td><strong>60′</strong></td></tr>
+    <tr><td>上肢混合</td><td>10′</td><td>3′</td><td>4′</td><td>13′</td><td>24′</td><td>6′</td><td><strong>60′</strong></td></tr>
   </table></div>
-  <p class="small">按组间休息 60–90 秒、引体和双杠 90 秒、两个区域之间走动 2 分钟算。能做完的前提是休息不拖：看着表，到点就做下一组。每个训练日的总览卡写了来不及时先砍哪一项。悬垂举腿只在有余时间时做。力量开始前每个器械动作先用 50% 重量做 1 组 10 次热身组，这 1 分钟已经算在里面。</p>
+  <p class="small">按力量动作组间休息 75 到 90 秒、核心组间 30 到 60 秒、换区域走动 1 分钟算。臀腿日多了 Y-T-W，所以收尾的爬坡只剩 4 分钟。能做完的前提是休息不拖，看着表到点就做下一组。每个训练日的总览卡写了来不及时先砍哪一项。</p>
 
   <h2>一周怎么排</h2>
-  <p><strong>6 天版</strong>：推、拉、腿、推、拉、腿、休。</p>
-  <p><strong>5 天版</strong>：推、拉、腿、休、上肢混合、腿、休。周四休，两个腿日之间隔三天。砍掉的是第二个推日，周五的"上肢混合"以拉为主再带两组推肩和双杠。</p>
-  <p>任何一天状态差，就只做固定部分的前半段（跑步机起坡加瑜伽室 22 分钟），再走 20 分钟，不要硬上力量。</p>
+  <p><strong>6 天版</strong>：推、拉、臀腿、推、拉、臀腿、休。</p>
+  <p><strong>5 天版</strong>：推、拉、臀腿、休、上肢混合、臀腿、休。周四休，两个臀腿日之间隔三天。周五的上肢混合从表格的推日和拉日里各取一部分：引体 3 组、低拉划船 3 组、双杠 2 组、推肩 2 组、后束划船 2 组。</p>
+  <p>任何一天状态差，就只做热身、胯、肩三个阶段，再走 20 分钟，不要硬上力量。</p>
+
+  <h2>按表格落地时我做的几处理解</h2>
+  <ul>
+    <li><strong>坐姿推肩</strong>：设备栏写的是哑铃，卡片按哑铃版写，用坐姿推肩机也可以，要领相同。</li>
+    <li><strong>俯卧撑单侧划船</strong>：按"一只手撑在凳或架子上、身体成俯撑斜线的单臂哑铃划船"理解，"前手往前压"指撑住的那只手。</li>
+    <li><strong>肩胛绕环</strong>：组数栏写"侧"，卡片写成每侧 5 圈加反向 5 圈，两侧一起做也可以。</li>
+    <li><strong>下巴后缩</strong>：表格没写要领，卡片补了一句"视线平视，下巴水平往后推"。</li>
+    <li><strong>9090 髋转换</strong>：按坐姿版写，手撑在身后完全可以；仰卧版放在退阶里。</li>
+    <li><strong>卷腹抬腿</strong>：就是之前跨水瓶画半圆的动作，改成屈膝、绕过泡沫轴。</li>
+  </ul>
 
   <h2>重量怎么加</h2>
-  <p>所有有重量的动作用<strong>双重渐进</strong>：先在固定重量下把次数做到区间上限，并且每组还剩 2 次余力，下一次才加重一格或减一格辅助。哑铃一次加 1–2 kg。</p>
+  <p>表格里力量动作都是 3 × 10。先在固定重量下把 3 组都做满 10 次，并且每组还剩 2 次余力，下一次才加重一格或减一格辅助。哑铃一次加 1 到 2 kg。</p>
   <div class="ladder">
-    <div><b>第 1–2 周</b>学动作。所有力量动作留 3 次余力，新动作（高脚杯、硬拉、腿伸展、后束划船）用最轻重量。</div>
-    <div><b>第 3–4 周</b>按双重渐进加重；爬坡速度提到 5.0–5.5。</div>
-    <div><b>第 5 周</b>减量周。重量不变，组数砍一半，爬坡照常。</div>
-    <div><b>第 6–8 周</b>启用邪修版：先离心慢放，再上无辅助引体 / 双杠、单腿硬拉。</div>
-    <div><b>8 周后</b>重新评估。引体辅助归零、双杠无辅助 8 次时再考虑 4 分化。</div>
+    <div><b>第 1–2 周</b>学动作。所有力量动作留 3 次余力，新动作用最轻重量。</div>
+    <div><b>第 3–4 周</b>3 组都做满 10 次就加重；爬坡速度提到 5.0–5.5。</div>
+    <div><b>第 5 周</b>减量周。重量不变，力量动作每个做 2 组。</div>
+    <div><b>第 6–8 周</b>启用卡片里的邪修版：先离心慢放，再上无辅助引体和双杠。</div>
+    <div><b>8 周后</b>重新评估。引体辅助归零、双杠无辅助 8 次时再考虑加动作。</div>
   </div>
-  <div class="note"><strong>停下的信号</strong>：关节的尖锐痛、刺痛、第二天还在的痛，立刻换退阶或跳过。肌肉的酸胀是正常的。肩前侧痛最常见于双杠和推肩，先把深度减半；膝盖前侧痛最常见于腿伸展机和深蹲太快，先减重放慢；腰痛最常见于硬拉弓背和划船甩腰，先减重练髋铰链。</div>
+  <div class="note"><strong>停下的信号</strong>：关节的尖锐痛、刺痛、第二天还在的痛，立刻换退阶或跳过。肌肉的酸胀是正常的。肩前侧痛最常见于双杠和推肩，先把深度减半；膝盖前侧痛最常见于腿伸展机和深蹲太快，先减重放慢；腰痛最常见于划船甩腰和后束划船弓背，先减重。</div>
 
-  <h2>你问过的几个问题</h2>
+  <h2>几个容易混的点</h2>
   <dl class="faq">
-    <dt>平板和侧平板哪个更好？</dt><dd>不是二选一。平板练抗伸展（身体前面），侧平板练抗侧屈（腹斜肌、腰方肌，管两侧和骨盆稳定）。你平板 45 秒已经到了该加难度的点，不要再加时间：抬一只脚、脚垫高，或者一手一脚同时抬。</dd>
-    <dt>反向卷腹是臀桥吗？我能做 3 × 46 次。</dt><dd>不是。臀桥是脚踩地把髋顶起来，练臀。反向卷腹是膝盖弯 90° 抬起，用下腹把骨盆卷离地面、膝盖往胸口走。一组能做 46 次，基本可以肯定是在用髋屈肌甩腿，骨盆没有卷起来。标准做法一组 12 次做慢（上 2 秒、停 1 秒、下 3 秒）就会很累。方案里已经换成你截图的坐姿收腿和双腿画半圆。</dd>
-    <dt>悬垂举腿会晃。</dt><dd>晃就是在借惯性。先吊稳、骨盆微微后卷，呼气举到大腿水平停 1 秒，3 秒放下，放到底后等身体完全停住再做下一次。宁可 6 次标准，不要 12 次晃的。</dd>
-    <dt>跑步机爬坡算放松吗？</dt><dd>不算。10–15 分钟是有氧，强度是能说话不能唱歌。放松是最后 2 分钟把坡度降到 2、速度降到 3 慢走，加下来后 2 分钟拉伸。</dd>
-    <dt>分腿蹲是保加利亚蹲吗？</dt><dd>不是。分腿蹲两只脚都在地上；保加利亚分腿蹲是后脚垫在凳子上的进阶版，在分腿蹲的邪修里。</dd>
-    <dt>90/90 不撑手做不到。</dt><dd>撑手完全可以，它练的是髋不是腰腹。方案已换成仰卧膝盖左右倒，躺着做，肚腩不碍事；90/90 留在邪修里，标准写在那张卡上。</dd>
-    <dt>后束那个动作到底是飞鸟还是拉？</dt><dd>是你截图的那个：趴在大腿上，手肘向外张开、往后上方顶，哑铃到胸口两侧，大臂和躯干成 T。方案里叫"俯身哑铃后束划船"。它和贴着身体往后划的划船不同，那个练背阔。</dd>
-    <dt>肩外旋到底怎么动？</dt><dd>大臂抬平到与肩同高后位置不变，只有小臂以手肘为轴从朝下转到朝上，像雨刮器。大臂不是不动，而是在肩窝里原地转。方案改成站姿版，正视图一看就懂。</dd>
+    <dt>平板做稳了要不要加时间？</dt><dd>不加。35 秒做稳以后改抬一只脚或脚垫高，时间保持不变。</dd>
+    <dt>悬垂卷腹会晃。</dt><dd>晃就是在借惯性。先吊稳、骨盆微微后卷，膝盖提到髋高停 1 秒，3 秒放下，放到底后等身体完全停住再做下一次。宁可 6 次标准。</dd>
+    <dt>卷腹抬腿和甩腿的区别。</dt><dd>腰不塌、肚子收紧、速度慢。做得很快很轻松说明是髋屈肌在甩腿，不是腹部在控制。</dd>
+    <dt>后束划船和单侧划船有什么不同？</dt><dd>后束划船手肘向外张开往后上方顶，大臂和躯干成 T，练肩后束。单侧划船手肘贴着身体往后顶，练背阔。</dd>
+    <dt>分腿蹲是保加利亚蹲吗？</dt><dd>不是。分腿蹲两只脚都在地上；保加利亚分腿蹲是后脚垫在凳子上的进阶版。</dd>
+    <dt>跑步机爬坡算放松吗？</dt><dd>不算。收尾的爬坡是有氧，强度是能说话不能唱歌。放松是最后 2 分钟降坡慢走加拉伸。</dd>
   </dl>
 
   <h2>跑步机爬坡</h2>
-  <p>你现在：起坡 3–5 分钟用坡度 6 / 速度 3，然后坡度 8–12、速度 3.8–4.5。结构是对的，起坡段直接算进热身。要改的是速度：3.8–4.5 偏慢，步幅拉不开，臀和腿后侧用不上。坡度按面板百分比。</p>
+  <p>热身按表格：坡度 6、速度 3.5 走 3 分钟。收尾的有氧坡度按面板百分比：</p>
   <div class="tbl"><table>
-    <tr><th>阶段</th><th>坡度</th><th>速度 km/h</th><th>时长</th><th>说明</th></tr>
-    <tr><td>第 1–2 周</td><td>8–10</td><td>4.5 → 5.0</td><td>10'</td><td>每周加 0.2，先提速度</td></tr>
-    <tr><td>第 3–4 周</td><td>10</td><td>5.0 → 5.5</td><td>10'（腿日 15'）</td><td>能说话不能唱歌，心率约 125–145</td></tr>
-    <tr><td>第 5 周起</td><td>10–12</td><td>5.5</td><td>10'（腿日 15–20'）</td><td>速度到 5.5 再加坡；邪修每 2 分钟 8 / 14 交替</td></tr>
+    <tr><th>阶段</th><th>坡度</th><th>速度 km/h</th><th>说明</th></tr>
+    <tr><td>第 1–2 周</td><td>8–10</td><td>4.5 → 5.0</td><td>每周加 0.2，先提速度</td></tr>
+    <tr><td>第 3–4 周</td><td>10</td><td>5.0 → 5.5</td><td>能说话不能唱歌，心率约 125–145</td></tr>
+    <tr><td>第 5 周起</td><td>10–12</td><td>5.5</td><td>速度到 5.5 再加坡</td></tr>
   </table></div>
   <ul>
     <li>不扶扶手。扶了坡度就白设了，还会把圆肩带进去。</li>
-    <li>椭圆机当备用：腿日第二天腿还酸、脚踝膝盖不舒服，就换椭圆机 12–15 分钟，手要真的拉推把手。</li>
-    <li>一周有氧累计 60–80 分钟够用。想快就把周日改成 40 分钟户外快走，不要再加训练日。</li>
+    <li>臀腿日的有氧只有 4 分钟。想补有氧就把周日改成 40 分钟户外快走，不要挤进训练日。</li>
   </ul>
 
   <h2>每周记录</h2>
   <ul>
-    <li>每个器械和哑铃动作的重量和每组次数。</li>
+    <li>每个力量动作的重量和每组次数。</li>
     <li>每周同一天早晨空腹体重取周均值。</li>
-    <li>训练后主观感受 1–5 分，连续三天 ≤ 2 分就安排一天只做固定部分加散步。</li>
+    <li>训练后主观感受 1–5 分，连续三天 ≤ 2 分就安排一天只做热身、胯、肩加散步。</li>
   </ul>
 
   <h2>吃和睡</h2>
@@ -245,7 +277,7 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
   </ul>
 
   <h2>动作要点参考</h2>
-  <p class="small">动作名称、要点和肌群对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>（873 个动作，含分解照片和步骤说明，Unlicense）。卡片上的分解照片（起始 → 结束）来自该库，示意图是按它的说明画的，照片和示意图可以在卡片上切换。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
+  <p class="small">卡片上的主要领、组数、次数来自你的表格。补充细节和分解照片（起始 → 结束）对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>，示意图是按它的说明画的。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
 </main>
 
 <footer class="bottom">
@@ -256,6 +288,7 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
   </div>
   <div class="tabs">
     <button type="button" id="tabTrain" class="on">训练</button>
+    <button type="button" id="tabTable">总表</button>
     <button type="button" id="tabDoc">说明</button>
   </div>
 </footer>
@@ -264,10 +297,14 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
 <script>
 (function(){
   var P=window.PLAN,EX=P.EX,S=P.S,DAYS=P.DAYS,CN=P.CN,WEEK=P.WEEK;
-  var mode=6, sel=new Date().getDay(), steps=[], idx=0;   // sel 为 0–6 或 'c'（固定部分）
+  var mode=6, today=new Date().getDay(), sel=today, steps=[], idx=0;   // sel 为 0–6 或 'c'（固定部分）
   try{var m=localStorage.getItem('ppl-mode');if(m==='5'||m==='6')mode=+m;}catch(e){}
   var $=function(id){return document.getElementById(id);};
   var deck=$('deck'),daysEl=$('days'),blocksEl=$('blocks');
+  var EQ={'双杆':'双杠','划船':'划船机','单杠':'单杠'};
+  var STAGE_KIND={'推日':'push','拉日':'pull','臀腿日':'legs'};
+  function kindOf(d){return WEEK[mode][d];}
+  function dayOfKind(k){var order=[today,1,2,3,4,5,6,0];for(var i=0;i<order.length;i++)if(kindOf(order[i])===k)return order[i];return null;}
 
   function figHTML(e){
     var sk=P.fig(P.FIGS[e.f]);
@@ -277,28 +314,51 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
       '<figcaption class="pcap">照片：起始 → 结束'+(e.pn?' · '+e.pn:'')+'</figcaption>'+
       '<div class="sketch">'+sk+'</div><button type="button" class="flip" data-flip>看示意图</button></div>';
   }
+  function flowHTML(s){var h='<ol class="flow">';s.flow.forEach(function(f){h+='<li><b>'+f[2]+'</b><div><strong>'+f[0]+'</strong><span>'+f[1]+'</span></div></li>';});return h+'</ol>';}
   function overviewHTML(kind,i){
     var s=S[kind];
-    var h='<article class="card ovcard" data-i="'+i+'"><div class="info"><div class="blk">总览 · 第 1 / '+steps.length+' 步</div><h2>'+CN[sel]+' · '+s.name+'</h2><div class="rx">'+s.sub+' · 预计 '+s.total+'</div>';
-    h+='<p class="small">今天在固定部分里的选择：'+s.variant+'。</p><ol class="flow">';
-    s.flow.forEach(function(f){h+='<li><b>'+f[2]+'</b><div><strong>'+f[0]+'</strong><span>'+f[1]+'</span></div></li>';});
-    h+='</ol><p class="small">'+s.late+'</p><button type="button" class="gocommon" data-common>打开固定部分（热身、胯、圆肩、核心、有氧、放松）</button><p class="small">往右滑是今天特有的动作。</p></div></article>';
+    return '<article class="card ovcard" data-i="'+i+'"><div class="info"><div class="blk">总览 · 第 1 / '+steps.length+' 步</div><h2>'+CN[sel]+' · '+s.name+'</h2><div class="rx">'+s.sub+' · 预计 '+s.total+'</div>'+
+      flowHTML(s)+'<p class="small">'+s.late+'</p><button type="button" class="gocommon" data-common="start">从固定部分开始：热身 → 胯 → 肩 → 核心</button><p class="small">往右滑是'+s.name+'的力量动作。</p></div></article>';
+  }
+  function liftsHTML(kind){
+    var st=P.buildSteps(kind).filter(function(x){return x.id.charAt(0)!=='_';});
+    return '<ul class="lifts">'+st.map(function(x){return '<li>'+x.name+'<span>'+x.rx+'</span></li>';}).join('')+'</ul>';
+  }
+  function todayHTML(i){
+    var k=kindOf(today),h='<article class="card ovcard" data-i="'+i+'"><div class="info"><div class="blk">当天力量 · 第 '+(i+1)+' / '+steps.length+' 步</div>';
+    if(k==='rest'){h+='<h2>今天是休息日</h2><p class="small">固定部分做到这里就可以结束。想看某一天的力量动作，点下面。</p>';}
+    else{h+='<h2>接下来：'+S[k].name+'</h2><div class="rx">'+CN[today]+' · '+S[k].sub+'</div>'+liftsHTML(k)+'<button type="button" class="gocommon" data-day="'+today+'">打开今天的力量动作</button>';}
+    h+='<div class="nextbtns"><button type="button" data-kind="push">推日</button><button type="button" data-kind="pull">拉日</button><button type="button" data-kind="legs">臀腿日</button></div>';
+    h+='<p class="small">力量做完回到这里，往右滑是收尾：爬坡有氧和拉伸。</p></div></article>';
     return h;
   }
+  function closingHTML(kind,i){
+    var s=S[kind],f=s.flow[s.flow.length-1];
+    return '<article class="card ovcard" data-i="'+i+'"><div class="info"><div class="blk">收尾 · 第 '+(i+1)+' / '+steps.length+' 步</div><h2>力量做完，去收尾</h2><div class="rx">'+f[1]+'</div>'+
+      '<p class="small">收尾在固定部分的最后两张卡：爬坡有氧和拉伸。</p><button type="button" class="gocommon" data-common="closing">打开收尾卡片</button></div></article>';
+  }
   function cardHTML(st,i){
-    if(st.id==='_overview') return overviewHTML(WEEK[mode][sel],i);
-    var e=EX[st.id],rx=st.rx||e.rx;
-    var h='<article class="card'+(st.id==='rest'?' restcard':'')+'" data-i="'+i+'">';
+    if(st.id==='_overview') return overviewHTML(kindOf(sel),i);
+    if(st.id==='_today') return todayHTML(i);
+    if(st.id==='_closing') return closingHTML(kindOf(sel),i);
+    var e=EX[st.id],more=(e.more||[]).slice(),cue=st.cue;
+    if(!cue&&more.length)cue=more.shift();
+    var h='<article class="card'+(st.id==='rest'?' restcard':'')+'" data-i="'+i+'" data-id="'+st.id+'">';
     h+=figHTML(e);
-    h+='<div class="info"><div class="blk">'+st.blk+' · 第 '+(i+1)+' / '+steps.length+' 步</div><h2>'+e.n+'</h2>'+(rx?'<div class="rx">'+rx+'</div>':'');
-    h+='<ul>'+e.c.map(function(c){return '<li>'+c+'</li>';}).join('')+'</ul>';
-    if(e.d||e.u)h+='<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>';
+    h+='<div class="info"><div class="blk">'+st.blk+(st.equip?' · '+(EQ[st.equip]||st.equip):'')+' · 第 '+(i+1)+' / '+steps.length+' 步</div><h2>'+st.name+'</h2>'+(st.rx?'<div class="rx">'+st.rx+'</div>':'');
+    if(st.only)h+='<div class="only">'+P.ONLY_LABEL[st.only]+'</div>';
+    if(cue)h+='<p class="cue"><b>要领</b>'+cue+'</p>';
+    if(more.length||e.d||e.u){
+      h+='<details class="more"><summary>细节 · 退阶 · 邪修</summary>';
+      if(more.length)h+='<ul>'+more.map(function(c){return '<li>'+c+'</li>';}).join('')+'</ul>';
+      if(e.d||e.u)h+='<div class="opts">'+(e.d?'<div class="down"><b>退阶</b>'+e.d+'</div>':'')+(e.u?'<div class="up"><b>邪修</b>'+e.u+'</div>':'')+'</div>';
+      h+='</details>';
+    }
     return h+'</div></article>';
   }
   function renderDays(){
-    var today=new Date().getDay(),h='';
-    h+='<button type="button" class="day common'+(sel==='c'?' sel':'')+'" data-d="c" aria-pressed="'+(sel==='c')+'"><div class="d">每天</div><div class="t">固定</div></button>';
-    [1,2,3,4,5,6,0].forEach(function(d){var k=WEEK[mode][d];
+    var h='<button type="button" class="day common'+(sel==='c'?' sel':'')+'" data-d="c" aria-pressed="'+(sel==='c')+'"><div class="d">每天</div><div class="t">固定</div></button>';
+    [1,2,3,4,5,6,0].forEach(function(d){var k=kindOf(d);
       h+='<button type="button" class="day '+S[k].cls+(d===today?' today':'')+(d===sel?' sel':'')+'" data-d="'+d+'" aria-pressed="'+(d===sel)+'"><div class="d">'+DAYS[d]+'</div><div class="t">'+S[k].short+'</div></button>';});
     daysEl.innerHTML=h;
     $('btn6').setAttribute('aria-pressed',mode===6);$('btn5').setAttribute('aria-pressed',mode===5);
@@ -314,10 +374,10 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
     var on=blocksEl.querySelector('.on');if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}
     $('cnt').textContent=(idx+1)+' / '+steps.length;
     $('prev').disabled=idx<=0;$('next').disabled=idx>=steps.length-1;
-    $('title').textContent=sel==='c'?'固定部分 · 每天都做':CN[sel]+' · '+S[WEEK[mode][sel]].name;
+    $('title').textContent=sel==='c'?'固定部分 · 每天都做':CN[sel]+' · '+S[kindOf(sel)].name;
   }
   function renderDeck(){
-    steps=sel==='c'?P.buildCommon():P.buildSteps(WEEK[mode][sel]);idx=0;
+    steps=sel==='c'?P.buildCommon():P.buildSteps(kindOf(sel));idx=0;
     deck.innerHTML=steps.map(cardHTML).join('');
     deck.scrollLeft=0;
     renderBlocks();
@@ -327,26 +387,53 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
     var c=deck.children[i];if(c)deck.scrollTo({left:c.offsetLeft,behavior:smooth===false?'auto':'smooth'});
     markBlock();
   }
-  function select(d){sel=d;renderDays();renderDeck();showTrain();}
+  function indexOfId(id){for(var i=0;i<steps.length;i++)if(steps[i].id===id)return i;return 0;}
+  function indexOfBlk(b){for(var i=0;i<steps.length;i++)if(steps[i].blk===b)return i;return 0;}
+  function select(d,at){sel=d;renderDays();renderDeck();idx=at||0;showView('train');}
+  function openRow(stage,id){
+    if(P.COMMON_STAGES.indexOf(stage)>=0||stage==='收尾'){sel='c';renderDays();renderDeck();idx=indexOfId(id);showView('train');return;}
+    var d=dayOfKind(STAGE_KIND[stage]);if(d==null)return;
+    sel=d;renderDays();renderDeck();idx=indexOfId(id);showView('train');
+  }
+
+  /* 总表 */
+  function renderSheet(){
+    var h='<thead><tr><th>设备</th><th>动作</th><th>时间</th><th>组数</th><th>次数</th><th>要领</th><th>备注</th></tr></thead><tbody>',cur='';
+    P.ROWS.forEach(function(r){
+      if(r.stage!==cur){cur=r.stage;h+='<tr class="grp"><td colspan="7">'+cur+'</td></tr>';}
+      h+='<tr class="row" data-stage="'+r.stage+'" data-id="'+r.id+'" tabindex="0"><td>'+r.equip+'</td><td>'+r.name+'</td><td>'+r.time+'</td><td>'+r.sets+'</td><td>'+r.reps+'</td><td>'+r.cue+'</td><td>'+r.note+'</td></tr>';
+    });
+    $('sheet').innerHTML=h+'</tbody>';
+  }
+  $('sheet').addEventListener('click',function(e){var tr=e.target.closest('tr.row');if(tr)openRow(tr.dataset.stage,tr.dataset.id);});
+  $('sheet').addEventListener('keydown',function(e){if(e.key!=='Enter')return;var tr=e.target.closest('tr.row');if(tr)openRow(tr.dataset.stage,tr.dataset.id);});
+
   var st;
   deck.addEventListener('click',function(e){
     var b=e.target.closest('[data-flip]');if(b){var f=b.closest('.fig');f.classList.toggle('show-sketch');b.textContent=f.classList.contains('show-sketch')?'看照片':'看示意图';return;}
-    if(e.target.closest('[data-common]')){select('c');}
+    var c=e.target.closest('[data-common]');if(c){sel='c';renderDays();renderDeck();idx=c.dataset.common==='closing'?indexOfBlk('收尾'):0;showView('train');return;}
+    var d=e.target.closest('[data-day]');if(d){select(+d.dataset.day,1);return;}
+    var k=e.target.closest('[data-kind]');if(k){var dd=dayOfKind(k.dataset.kind);if(dd!=null)select(dd,1);}
   });
   deck.addEventListener('scroll',function(){clearTimeout(st);st=setTimeout(function(){var i=Math.round(deck.scrollLeft/deck.clientWidth);if(i!==idx){idx=i;markBlock();}},80);});
   $('prev').addEventListener('click',function(){go(idx-1);});
   $('next').addEventListener('click',function(){go(idx+1);});
-  blocksEl.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;showTrain();go(+b.dataset.i);});
+  blocksEl.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;idx=+b.dataset.i;showView('train');});
   daysEl.addEventListener('click',function(e){var b=e.target.closest('.day');if(!b)return;select(b.dataset.d==='c'?'c':+b.dataset.d);});
   $('btn6').addEventListener('click',function(){mode=6;try{localStorage.setItem('ppl-mode','6');}catch(e){}renderDays();renderDeck();});
   $('btn5').addEventListener('click',function(){mode=5;try{localStorage.setItem('ppl-mode','5');}catch(e){}renderDays();renderDeck();});
   document.addEventListener('keydown',function(e){if($('trainView').classList.contains('hidden'))return;if(e.key==='ArrowRight')go(idx+1);if(e.key==='ArrowLeft')go(idx-1);});
-  function showTrain(){$('trainView').classList.remove('hidden');$('docView').classList.add('hidden');$('nav').classList.remove('hidden');$('tabTrain').classList.add('on');$('tabDoc').classList.remove('on');requestAnimationFrame(function(){go(idx,false);});}
-  function showDoc(){$('trainView').classList.add('hidden');$('docView').classList.remove('hidden');$('nav').classList.add('hidden');$('tabTrain').classList.remove('on');$('tabDoc').classList.add('on');}
-  $('tabTrain').addEventListener('click',showTrain);
-  $('tabDoc').addEventListener('click',showDoc);
+  var VIEWS={train:['trainView','tabTrain'],table:['tableView','tabTable'],doc:['docView','tabDoc']};
+  function showView(name){
+    Object.keys(VIEWS).forEach(function(k){$(VIEWS[k][0]).classList.toggle('hidden',k!==name);$(VIEWS[k][1]).classList.toggle('on',k===name);});
+    $('nav').classList.toggle('hidden',name!=='train');
+    if(name==='train')requestAnimationFrame(function(){go(idx,false);});
+  }
+  $('tabTrain').addEventListener('click',function(){showView('train');});
+  $('tabTable').addEventListener('click',function(){showView('table');});
+  $('tabDoc').addEventListener('click',function(){showView('doc');});
   window.addEventListener('resize',function(){go(idx,false);});
-  renderDays();renderDeck();
+  renderSheet();renderDays();renderDeck();
 })();
 </script>
 </body>
