@@ -12,6 +12,7 @@
   --bg:#f3f4f2; --surface:#ffffff; --fg:#1c2026; --muted:#5e6670; --line:#d8dcdf;
   --accent:#e4502f; --accent-soft:#fbe4dd; --pink:#f08ca3; --ink:#232a33; --ink-fg:#f4f5f3;
   --ok:#2f8f5b; --blue:#3b6ea8; --figbg:#eceef0;
+  --lineart:invert(1);
   --font-body:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
   --font-num:"Helvetica Neue","PingFang SC",system-ui,sans-serif;
   color-scheme:light;
@@ -19,13 +20,13 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#15181c; --surface:#1e2228; --fg:#e8eaec; --muted:#9aa3ad; --line:#333a42;
-    --accent:#f0674a; --accent-soft:#3b231d; --pink:#d9748d; --ink:#0f1114; --ink-fg:#e8eaec; --ok:#5ec48b; --blue:#7aa6dc; --figbg:#262b31;
+    --accent:#f0674a; --accent-soft:#3b231d; --pink:#d9748d; --ink:#0f1114; --ink-fg:#e8eaec; --ok:#5ec48b; --blue:#7aa6dc; --figbg:#262b31; --lineart:none;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#15181c; --surface:#1e2228; --fg:#e8eaec; --muted:#9aa3ad; --line:#333a42;
-  --accent:#f0674a; --accent-soft:#3b231d; --pink:#d9748d; --ink:#0f1114; --ink-fg:#e8eaec; --ok:#5ec48b; --blue:#7aa6dc; --figbg:#262b31;
+  --accent:#f0674a; --accent-soft:#3b231d; --pink:#d9748d; --ink:#0f1114; --ink-fg:#e8eaec; --ok:#5ec48b; --blue:#7aa6dc; --figbg:#262b31; --lineart:none;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -133,6 +134,7 @@ svg .lbl{font-family:var(--font-body);font-size:9px;fill:var(--accent);font-weig
 /* 照片 + 示意图切换 */
 .photos{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:360px;margin:0 auto}
 .photos img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:6px;background:#fff;display:block}
+.photos img.lineart{aspect-ratio:1;object-fit:contain;background:transparent;filter:var(--lineart)}
 .fig .pcap{font-size:.74rem;color:var(--muted);text-align:center;padding:4px 0 2px}
 .fig.has-photo .sketch{display:none}
 .fig.has-photo.show-sketch .sketch{display:block}
@@ -280,7 +282,7 @@ details.more[open] summary::after{content:" ▴"}
   </ul>
 
   <h2>动作要点参考</h2>
-  <p class="small">卡片上的主要领、组数、次数来自你的表格。补充细节和分解照片（起始 → 结束）对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>，示意图是按它的说明画的。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
+  <p class="small">卡片上的主要领、组数、次数来自你的表格。补充细节和分解照片（起始 → 结束）对照了公有领域的 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>，示意图是按它的说明画的。肩胛俯卧撑、俯卧 Y-T-W、侧身胸部拉伸三张线稿来自 <a href="https://github.com/bryllim/workout-guide" target="_blank" rel="noopener">Workout Guide</a>：原始动作线稿由 <a href="https://github.com/everkinetic/data" target="_blank" rel="noopener">Everkinetic</a> 创作、<a href="https://bryllim.com" target="_blank" rel="noopener">Bryl Lim</a> 扩展，许可 <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>；本页未改动文件，仅在浅色模式下反相显示。本方案是通用健身建议，不是医疗意见；有心血管病史、近期手术或持续疼痛，请先咨询医生或康复师。</p>
 </main>
 
 <footer class="bottom">
@@ -311,10 +313,12 @@ details.more[open] summary::after{content:" ▴"}
 
   function figHTML(e){
     var sk=P.fig(P.FIGS[e.f]);
-    if(!e.p) return '<div class="fig">'+sk+'</div>';
-    var b='img/'+e.p,oe=' onerror="this.closest(\'.fig\').classList.add(\'nophoto\')"';
-    return '<div class="fig has-photo"><div class="photos"><img src="'+b+'-0.jpg" alt="起始" loading="lazy"'+oe+'><img src="'+b+'-1.jpg" alt="结束" loading="lazy"'+oe+'></div>'+
-      '<figcaption class="pcap">照片：起始 → 结束'+(e.pn?' · '+e.pn:'')+'</figcaption>'+
+    var pics=e.pics||(e.p?['img/'+e.p+'-0.jpg','img/'+e.p+'-1.jpg']:null);
+    if(!pics) return '<div class="fig">'+sk+'</div>';
+    var oe=' onerror="this.closest(\'.fig\').classList.add(\'nophoto\')"',cls=e.lineart?' class="lineart"':'';
+    var cap=e.pcap||('照片：起始 → 结束'+(e.pn?' · '+e.pn:''));
+    return '<div class="fig has-photo"><div class="photos"><img src="'+pics[0]+'" alt="起始" loading="lazy"'+cls+oe+'><img src="'+pics[1]+'" alt="结束" loading="lazy"'+cls+oe+'></div>'+
+      '<figcaption class="pcap">'+cap+'</figcaption>'+
       '<div class="sketch">'+sk+'</div><button type="button" class="flip" data-flip>看示意图</button></div>';
   }
   function flowHTML(s){var h='<ol class="flow">';s.flow.forEach(function(f){h+='<li><b>'+f[2]+'</b><div><strong>'+f[0]+'</strong><span>'+f[1]+'</span></div></li>';});return h+'</ol>';}

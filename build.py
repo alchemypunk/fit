@@ -63,7 +63,8 @@ plan_full=f"""<!doctype html>
   document.getElementById('sheet').innerHTML=h+'</tbody>';
   function card(st,n){{
     var e=EX[st.id],more=(e.more||[]).slice(),cue=st.cue;if(!cue&&more.length)cue=more.shift();
-    var ph=e.p?'<div class="photos"><img src="img/'+e.p+'-0.jpg" alt="起始" loading="lazy"><img src="img/'+e.p+'-1.jpg" alt="结束" loading="lazy"></div><div class="pcap">照片：起始 → 结束'+(e.pn?' · '+e.pn:'')+'</div>':'';
+    var pics=e.pics||(e.p?['img/'+e.p+'-0.jpg','img/'+e.p+'-1.jpg']:null),cls=e.lineart?' class="lineart"':'';
+    var ph=pics?'<div class="photos"><img src="'+pics[0]+'" alt="起始" loading="lazy"'+cls+'><img src="'+pics[1]+'" alt="结束" loading="lazy"'+cls+'></div><div class="pcap">'+(e.pcap||('照片：起始 → 结束'+(e.pn?' · '+e.pn:'')))+'</div>':'';
     return '<article class="ex"><div class="fig">'+ph+P.fig(P.FIGS[e.f])+'</div><div class="info"><h2>'+n+'. '+st.name+(st.equip?' <span class="small">· '+(EQ[st.equip]||st.equip)+'</span>':'')+'</h2>'+(st.rx?'<div class="rx">'+st.rx+'</div>':'')+
       (st.only?'<div class="only">'+P.ONLY_LABEL[st.only]+'</div>':'')+(cue?'<p class="cue"><b>要领</b>'+cue+'</p>':'')+
       (more.length?'<ul>'+more.map(function(c){{return '<li>'+c+'</li>';}}).join('')+'</ul>':'')+

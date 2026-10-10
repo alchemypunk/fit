@@ -7,7 +7,7 @@
 - `index.html`：卡片式手机页面（GitHub Pages 直接打开的就是它）
 - `data.js`：动作、图示、训练日数据，两个页面共用
 - `plan-full.html`：同一方案的长文版，由 `build.py` 生成，适合在电脑上通读
-- `img/`：动作分解照片，来自公有领域的 Free Exercise DB（见 `img/SOURCE.md`）
+- `img/`：动作分解照片，来自公有领域的 Free Exercise DB；`img/wg/` 是 Workout Guide 的动作线稿（Everkinetic 原作、Bryl Lim 扩展，CC BY-SA 4.0）。出处见 `img/SOURCE.md`
 
 改完 `index.html` 或 `data.js` 后运行 `python3 build.py` 重新生成长文版。
 
